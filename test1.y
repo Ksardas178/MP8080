@@ -125,7 +125,10 @@ typedef struct {
 	char * str;
 }
 
-%token	<val>NUM
+%token	<val>DECIMAL
+%token	<str>HEADECIMAL
+%token	<str>OCTAL
+%token	<str>BINARY
 %token	<str>ID
 %token	DIVIDER
 %token	<str>LABEL
@@ -134,18 +137,31 @@ typedef struct {
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-text: line '\n' text	{}
+text: line divider text	{}
+	| line divider		{}
 	| line				{}
 
 line: command 						{}
 	| LABEL			 			 	{}
 
-command	: 	ID DIVIDER arguments	{}
-		|	ID						{}
+command	: 	id divider arguments	{}
+		|	id						{}
 
-arguments	: arguments DIVIDER arguments 	{}
-			| ID 							{}
-			| NUM							{}			
+arguments	: arg divider arguments {}
+			| arg
+
+arg	: id	{}
+	| num	{}
+
+id	: ID	{ printf("%s\n", $1); }
+
+divider	: DIVIDER divider 	{}
+		| DIVIDER			{}
+
+num	: DECIMAL		{}
+	| HEADECIMAL	{}
+	| OCTAL			{}
+	| BINARY		{}
 
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

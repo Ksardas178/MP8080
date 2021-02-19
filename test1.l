@@ -15,14 +15,27 @@ extern lineCounter;
 [A-Z]+					{ yylval.str = yytext; return ID;}
 
 [a-zA-Z_]+[a-zA-Z0-9_]*:	{ yylval.str = yytext; return LABEL;}
-[0-7]    				{ 	
+
+h[0-9a-fA-F]+   		{ 	
+							yylval.str = yytext;
+							return HEADECIMAL;			
+						}
+b[0-1]+   				{ 	
+							yylval.str = yytext;
+							return BINARY;		
+						}
+o[0-7]+   				{ 	
+							yylval.str = yytext;
+							return OCTAL;			
+						}
+d*[0-9]+   				{ 	
 							yylval.val = atoi(yytext);
-							return NUM; 			
+							return DECIMAL;			
 						}
 [ \t]+					{ return DIVIDER; }
 \n						{ 
 							lineCounter++;
-							return yytext[0];
+							return DIVIDER;
 						}
 (.)	    				return yytext[0];
 %%
