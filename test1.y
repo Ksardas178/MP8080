@@ -116,6 +116,8 @@ typedef struct {
 	variousInfo * arg;//Число либо строка в зависимости от типа
 } argumentInfo;
 
+
+	
 %}
 //=====================================================
 
@@ -169,7 +171,60 @@ num	: DECIMAL		{}
 int toDecimalConvert(int base, char * num) {
 	/*TODO конвертер по разным основаниям в 10-чную систему*/
 }
-	
+
+int toOctalConvert(int base, char * num) {
+	/*Надо ли это нам? Как будем хранить не десятичные числа? Мб вообще в строках? А работать с 10-м представлением?*/
+	/*TODO конвертер по разным основаниям в 8-чную систему*/
+}
+
+//Конвертация символьного значения регистра/регистровой пары в числовое
+int argConvert(char * arg) {
+	if (strcmp(arg, "B") == 0)
+	{
+		return 0;
+	}
+	else if (strcmp(arg, "C") == 0) 
+	{
+		return 1;
+	}
+	else if (strcmp(arg, "D") == 0) 
+	{
+		return 2;
+	}
+	else if (strcmp(arg, "E") == 0) 
+	{
+		return 3;
+	}
+	else if (strcmp(arg, "H") == 0) 
+	{
+		return 4;
+	}
+	else if (strcmp(arg, "L") == 0) 
+	{
+		return 5;
+	}
+	else if (strcmp(arg, "M") == 0) 
+	{
+		return 6;
+	}
+	else if (strcmp(arg, "A") == 0) 
+	{
+		return 7;
+	}
+	else if (strcmp(arg, "SP") == 0) 
+	{
+		return 6;
+	}
+	else if (strcmp(arg, "PSW") == 0) 
+	{
+		return 6;
+	}
+	else 
+	{
+		printf("<ERROR>: unexpected argument\n");
+		return 0;
+	}
+}
 
 /*Full command list*/
 /*XCHG|XTHL|SPHL|PCHL|RET|RNZ|RZ|RNC|RC|RPO|RPE|RP|RM|EI|DI|NOP|HLT|DAA|CMA|RLC|RRC|RAL|RAR|STC|CMC;
