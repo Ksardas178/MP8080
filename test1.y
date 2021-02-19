@@ -90,8 +90,8 @@ enum OPCODE
 	RAR,
 	STC,
 	CMC,
-};
-	
+};	
+
 //Типы аргументов
 enum ARGTYPE
 {
@@ -166,7 +166,9 @@ num	: DECIMAL		{}
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-	
+int toDecimalConvert(int base, char * num) {
+	/*TODO конвертер по разным основаниям в 10-чную систему*/
+}
 	
 
 /*Full command list*/
