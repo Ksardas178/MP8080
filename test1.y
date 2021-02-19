@@ -152,7 +152,7 @@ command	: 	id divider arguments	{}
 arguments	: arg divider arguments {}
 			| arg
 
-arg	: id	{}
+arg	: id	{ if (isRegisterName($<str>1) == 1) printf("found\n");}
 	| num	{}
 
 id	: ID	{ printf("%s\n", $1); }
@@ -172,9 +172,46 @@ int toDecimalConvert(int base, char * num) {
 	/*TODO конвертер по разным основаниям в 10-чную систему*/
 }
 
-int toOctalConvert(int base, char * num) {
+int toBaseConvert(int base, int num) {
 	/*Надо ли это нам? Как будем хранить не десятичные числа? Мб вообще в строках? А работать с 10-м представлением?*/
 	/*TODO конвертер по разным основаниям в 8-чную систему*/
+}
+
+/*TODO сделать три процедуры по количеству аргументов
+одну процедуру выделить как общую (в ней вызывать остальные),
+подумать над кнцепцией (нормальная ли вообще?)*/
+//Встречена команда?
+int isCommandName(char * arg) {
+	const char * a[] =
+		{"XCHG", "XTHL", "SPHL", "PCHL", "RET", 
+		 "RNZ", "RZ", "RNC", "RC", "RPO", "RPE", 
+		 "RP", "RM", "EI", "DI", "NOP", "HLT", 
+		 "DAA", "CMA", "RLC", "RRC", "RAL", 
+		 "RAR", "STC", "CMC" };
+	int length = sizeof(a)/sizeof(a[0]);
+	for (int i = 0; i < length; i++)
+	{
+		if (strcmp(arg, a[i]) == 0) 
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+//Встречено условное имя регистра/регистровой пары?
+int isRegisterName(char * arg) {
+	const char * a[] = 
+		{"B", "C", "D", "E", "H", "L", "M", "A", "PSW", "SP"};
+	int length = sizeof(a)/sizeof(a[0]);
+	for (int i = 0; i < length; i++)
+	{
+		if (strcmp(arg, a[i]) == 0) 
+		{
+			return 1;
+		}
+	}
+	return 0;
 }
 
 //Конвертация символьного значения регистра/регистровой пары в числовое
