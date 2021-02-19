@@ -18,7 +18,7 @@ extern lineCounter;
 
 h[0-9a-fA-F]+   		{ 	
 							yylval.str = yytext;
-							return HEADECIMAL;			
+							return HEXADECIMAL;			
 						}
 b[0-1]+   				{ 	
 							yylval.str = yytext;

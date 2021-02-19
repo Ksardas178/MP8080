@@ -126,7 +126,7 @@ typedef struct {
 }
 
 %token	<val>DECIMAL
-%token	<str>HEADECIMAL
+%token	<str>HEXADECIMAL
 %token	<str>OCTAL
 %token	<str>BINARY
 %token	<str>ID
@@ -159,13 +159,14 @@ divider	: DIVIDER divider 	{}
 		| DIVIDER			{}
 
 num	: DECIMAL		{}
-	| HEADECIMAL	{}
+	| HEXADECIMAL	{}
 	| OCTAL			{}
 	| BINARY		{}
 
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+	
 	
 
 /*Full command list*/
