@@ -1,0 +1,26 @@
+>line 3: Fun 'test0' is missing return statement
+>line 6: Operand type mismatch. Expected 'int'
+>line 7: Operand type mismatch. Expected 'char'
+>line 8: Return type mismatch. Expected 'int'
+>line 29: Operand type mismatch. Expected 'char'
+>line 30: Operand type mismatch. Expected 'char'
+>line 31: Variable redefinition 'q'
+>line 33: Undefined variable 'j'
+>line 36: Undefined variable 'b'
+>line 36: Undefined variable 'a'
+>line 36: Fun 'wrongf' is missing return statement
+>line 38: Fun 'empty' has an empty body
+>line 38: Fun 'empty' is missing return statement
+>line 42: Undefined variable 'r'
+>line 42: Undefined variable 'e'
+>line 43: Fun 'noReturn' is missing return statement
+>line 46: Operand type mismatch. Expected 'char'
+>line 46: Undefined variable 'd'
+>line 53: Undefined variable 'a'
+>line 53: Undefined variable 'b'
+>line 62: Return type mismatch. Expected 'int'
+>line 68: Variable redefinition 'a'
+>line 69: Variable redefinition 'b'
+>line 74: Variable redefinition 'a'
+>line 82: Return type mismatch. Expected 'int'
+>line 86: Return type mismatch. Expected 'int'

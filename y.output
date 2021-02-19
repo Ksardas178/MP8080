@@ -1,0 +1,136 @@
+   0  $accept : text $end
+
+   1  text : line '\n' text
+   2       | line
+
+   3  line : command
+   4       | LABEL
+
+   5  command : ID DIVIDER arguments
+   6          | ID
+
+   7  arguments : arguments DIVIDER arguments
+   8            | ID
+   9            | NUM
+
+state 0
+	$accept : . text $end  (0)
+
+	ID  shift 1
+	LABEL  shift 2
+	.  error
+
+	text  goto 3
+	line  goto 4
+	command  goto 5
+
+
+state 1
+	command : ID . DIVIDER arguments  (5)
+	command : ID .  (6)
+
+	DIVIDER  shift 6
+	$end  reduce 6
+	'\n'  reduce 6
+
+
+state 2
+	line : LABEL .  (4)
+
+	.  reduce 4
+
+
+state 3
+	$accept : text . $end  (0)
+
+	$end  accept
+
+
+state 4
+	text : line . '\n' text  (1)
+	text : line .  (2)
+
+	'\n'  shift 7
+	$end  reduce 2
+
+
+state 5
+	line : command .  (3)
+
+	.  reduce 3
+
+
+state 6
+	command : ID DIVIDER . arguments  (5)
+
+	NUM  shift 8
+	ID  shift 9
+	.  error
+
+	arguments  goto 10
+
+
+state 7
+	text : line '\n' . text  (1)
+
+	ID  shift 1
+	LABEL  shift 2
+	.  error
+
+	text  goto 11
+	line  goto 4
+	command  goto 5
+
+
+state 8
+	arguments : NUM .  (9)
+
+	.  reduce 9
+
+
+state 9
+	arguments : ID .  (8)
+
+	.  reduce 8
+
+
+state 10
+	command : ID DIVIDER arguments .  (5)
+	arguments : arguments . DIVIDER arguments  (7)
+
+	DIVIDER  shift 12
+	$end  reduce 5
+	'\n'  reduce 5
+
+
+state 11
+	text : line '\n' text .  (1)
+
+	.  reduce 1
+
+
+state 12
+	arguments : arguments DIVIDER . arguments  (7)
+
+	NUM  shift 8
+	ID  shift 9
+	.  error
+
+	arguments  goto 13
+
+
+13: shift/reduce conflict (shift 12, reduce 7) on DIVIDER
+state 13
+	arguments : arguments . DIVIDER arguments  (7)
+	arguments : arguments DIVIDER arguments .  (7)
+
+	DIVIDER  shift 12
+	$end  reduce 7
+	'\n'  reduce 7
+
+
+State 13 contains 1 shift/reduce conflict.
+
+
+7 terminals, 5 nonterminals
+10 grammar rules, 14 states

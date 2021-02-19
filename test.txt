@@ -1,0 +1,4 @@
+XCHG
+LDAX 7
+MOV B H
+MVI D E
