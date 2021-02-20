@@ -94,11 +94,22 @@ enum OPCODE
 
 enum OUTPUTMODE
 {
-	BINARY,
-	OCTAL,
-	NUMERIC,
-	CHECK
-} globalMode;
+	M_BINARY,
+	M_OCTAL,
+	M_NUMERIC,
+	M_CHECK
+};
+	
+typedef struct {
+	char content[MSG_LENGTH];
+} message;	
+
+//Буфер хранения сообщений о ходе анализа функции
+typedef struct {
+	int size;
+	int stored;
+	message *p;
+} analyzeBuffer;	
 	
 //Описание команды:
 typedef struct {
@@ -111,9 +122,13 @@ typedef struct {
 	
 //Информация об анализируемой операции
 operationDescription opDesc;
+analyzeBuffer analyzeBuf;
+char stringBuffer[MSG_LENGTH];
 	
 //Флаги
 int readingCommandLine = 0;
+int inProgram = 0;
+enum OUTPUTMODE globalMode = M_BINARY;
 	
 %}
 //=====================================================
@@ -134,9 +149,11 @@ int readingCommandLine = 0;
 %token	NEWLINE
 %token	<str>LABEL
 
-%start text													
+%start _text													
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+_text	: text	{ printAnalyzeBuf(); }
 
 text: newLine line newLine text	{}
 	| line newLine text			{}
@@ -175,7 +192,7 @@ arg	: id			{}
 
 ariphmetic	: num	{/*Потом отсюда расширим арифметику*/}
 
-id	: ID	{ printf("%s\n", $1); operationAnalyze($1); }
+id	: ID	{ operationAnalyze($1); }
 
 divider	: DIVIDER divider 	{}
 		| DIVIDER			{}
@@ -189,19 +206,122 @@ num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-/*int[] toBinaryConvert(int num) {
-	char result[MAX_BINARY_LENGTH];
-	for (int i = MAX_BINARY_LENGTH-1; i >= 0; i--) {
-		result[i] = num%2;
-		num = num/2;
+void toBaseConvert(int num, int base, int digits) {
+	for (int i = digits-1; i >= 0; i-=1) 
+	{
+		stringBuffer[i] = num % base + '0';
+		num = num / base;
 	}
-	return result;
-}*/
+	stringBuffer[digits] = '\0';
+}
+
+void storeAnalizeBuf(char * msg) {
+	analyzeBuf.stored++;
+	if (analyzeBuf.stored > analyzeBuf.size) 
+	{
+		analyzeBuf.size+=ANALYZE_BUF_ALLOCATE_SIZE;
+		analyzeBuf.p = (message*)realloc(analyzeBuf.p, analyzeBuf.size * sizeof(message));
+	}
+	strcpy(analyzeBuf.p[analyzeBuf.stored-1].content, msg);
+}
+
+void storeNumToAnalizeBuffer(int num, int base, int digits){
+	char temp[MSG_LENGTH];
+	toBaseConvert(num, base, digits);
+	sprintf(temp, "%s\n", stringBuffer);
+	storeAnalizeBuf(temp);
+}
+
+internalBinaryStore() {
+	const int base = 2;
+	const int digits = 8;
+	const int arg1 = opDesc.arg1;
+	const int arg2 = opDesc.arg2;
+	if (strcmp(opDesc.opName, "MOV") == 0)
+	{
+		storeNumToAnalizeBuffer(1, base, digits);
+		storeNumToAnalizeBuffer(arg1, base, digits);
+		storeNumToAnalizeBuffer(arg2, base, digits);
+	}
+	else if (strcmp(opDesc.opName, "MVI") == 0)
+	{
+		storeNumToAnalizeBuffer(0, base, digits);
+		storeNumToAnalizeBuffer(arg1, base, digits);
+		storeNumToAnalizeBuffer(arg2, base, digits);
+	}
+	else if (strcmp(opDesc.opName, "LXI") == 0)
+	{
+		
+	}
+	else if (strcmp(opDesc.opName, "LDA") == 0)
+	{
+		
+	}
+	else if (strcmp(opDesc.opName, "LDAX") == 0)
+	{
+		
+	}
+	else if (strcmp(opDesc.opName, "STA") == 0)
+	{
+		
+	}
+	else if (strcmp(opDesc.opName, "STAX") == 0)
+	{
+		
+	}
+}
 
 void getCommand(enum OUTPUTMODE mode) {
 	readingCommandLine = 0;
-	printf("\x1b[32;1mparsed: %s %d %d\n\x1b[0m", opDesc.opName, opDesc.arg1, opDesc.arg2);
-	
+	char temp[MSG_LENGTH];
+	switch (mode) 
+	{			
+		case M_CHECK:
+			switch (opDesc.expectedArgs)
+			{
+				case 1:
+					sprintf(temp, "%s %d\n", opDesc.opName, opDesc.arg1);
+					storeAnalizeBuf(temp);
+					break;
+				case 2:
+					sprintf(temp, "%s %d %d\n", opDesc.opName, opDesc.arg1, opDesc.arg2);
+					storeAnalizeBuf(temp);
+					break;
+				default:
+					printf("<ERROR> too much args");
+					break;
+			}
+			break;
+		case M_BINARY:
+			internalBinaryStore();
+			break;
+		case M_OCTAL:
+			/*TODO*/
+			break;
+		case M_NUMERIC:
+			/*TODO*/
+			break;
+		default:
+			printf("<ERROR> unrecognized mode");
+			break;
+	}
+}
+
+void analyzeBufInit() {
+	free(analyzeBuf.p);
+	analyzeBuf.stored = 0;
+	analyzeBuf.size = ANALYZE_BUF_INIT_SIZE;
+	analyzeBuf.p = (message *)calloc(ANALYZE_BUF_INIT_SIZE, sizeof(message));
+}
+
+void printAnalyzeBuf() {
+	printf("\n\x1b[30;1mCode analysis results:\n\x1b[0m______________________________\n");
+	for (int i = 0; i < analyzeBuf.stored; i++) 
+	{
+		toBaseConvert(i, 2, 8);	
+		printf("%s: %s", stringBuffer, analyzeBuf.p[i].content);
+	}
+	printf("\n");
 }
 
 void numArgAnalyze(int arg) {
@@ -261,13 +381,17 @@ void addOpDescArgument(int arg) {
 				break;
 		}
 	}
-	/*if (opDesc.args == opDesc.expectedArgs)
-		printf("parsed: %s %d %d\n", opDesc.opName, opDesc.arg1, opDesc.arg2);*/
 }
 
 
 //Инициализация переменной под новую операцию
 void operationAnalyze(char * name) {
+	//Только вошли в программу?
+	if (inProgram == 0)
+	{
+		analyzeBufInit();
+		inProgram = 1;
+	}
 	//Проверяем, читаем уже команду или пока нет
 	if (readingCommandLine == 0) 
 	{

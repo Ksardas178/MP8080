@@ -112,11 +112,22 @@ enum OPCODE
 
 enum OUTPUTMODE
 {
-	BINARY,
-	OCTAL,
-	NUMERIC,
-	CHECK
-} globalMode;
+	M_BINARY,
+	M_OCTAL,
+	M_NUMERIC,
+	M_CHECK
+};
+	
+typedef struct {
+	char content[MSG_LENGTH];
+} message;	
+
+/*Буфер хранения сообщений о ходе анализа функции*/
+typedef struct {
+	int size;
+	int stored;
+	message *p;
+} analyzeBuffer;	
 	
 /*Описание команды:*/
 typedef struct {
@@ -129,11 +140,15 @@ typedef struct {
 	
 /*Информация об анализируемой операции*/
 operationDescription opDesc;
+analyzeBuffer analyzeBuf;
+char stringBuffer[MSG_LENGTH];
 	
 /*Флаги*/
 int readingCommandLine = 0;
+int inProgram = 0;
+enum OUTPUTMODE globalMode = M_BINARY;
 	
-#line 122 "test1.y"
+#line 137 "test1.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -145,7 +160,7 @@ typedef union {
 	char * str;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 149 "y.tab.c"
+#line 164 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -190,47 +205,47 @@ extern int YYPARSE_DECL();
 #define YYERRCODE 256
 typedef short YYINT;
 static const YYINT yylhs[] = {                           -1,
-    0,    0,    0,    0,    0,    0,    1,    1,    1,    1,
-    1,    2,    2,    4,    4,    4,    6,    6,    6,    7,
-    7,    8,    5,    3,    3,    9,    9,    9,    9,
+    0,    1,    1,    1,    1,    1,    1,    2,    2,    2,
+    2,    2,    3,    3,    5,    5,    5,    7,    7,    7,
+    8,    8,    9,    6,    4,    4,   10,   10,   10,   10,
 };
 static const YYINT yylen[] = {                            2,
-    4,    3,    3,    2,    2,    1,    1,    2,    2,    3,
-    2,    1,    1,    3,    2,    1,    3,    2,    1,    1,
-    1,    1,    1,    2,    1,    2,    2,    2,    2,
+    1,    4,    3,    3,    2,    2,    1,    1,    2,    2,
+    3,    2,    1,    1,    3,    2,    1,    3,    2,    1,
+    1,    1,    1,    1,    2,    1,    2,    2,    2,    2,
 };
 static const YYINT yydefred[] = {                         0,
-   23,    0,    0,   13,    0,    0,    0,    0,   12,    0,
-   24,    0,    0,    9,    0,    0,    0,    0,    2,    0,
-    9,    0,    0,    0,    0,   20,   14,    0,   21,   22,
-    1,   26,   27,   28,   29,    0,   17,
+   24,    0,    0,   14,    0,    1,    0,    0,    0,   13,
+    0,   25,    0,    0,   10,    0,    0,    0,    0,    3,
+    0,   10,    0,    0,    0,    0,   21,   15,    0,   22,
+   23,    2,   27,   28,   29,   30,    0,   18,
 };
 static const YYINT yydgoto[] = {                          5,
-    6,    7,    8,    9,   10,   27,   28,   29,   30,
+    6,    7,    8,    9,   10,   11,   28,   29,   30,   31,
 };
-static const YYINT yysindex[] = {                      -233,
-    0, -261, -217,    0,    0, -220, -217, -217,    0, -261,
-    0, -261, -217,    0, -233, -261, -221, -233,    0, -217,
-    0, -254, -250, -246, -241,    0,    0, -261,    0,    0,
-    0,    0,    0,    0,    0, -221,    0,
+static const YYINT yysindex[] = {                      -216,
+    0, -263, -256,    0,    0,    0, -212, -256, -256,    0,
+ -263,    0, -263, -256,    0, -216, -263, -220, -216,    0,
+ -256,    0, -250, -249, -246, -245,    0,    0, -263,    0,
+    0,    0,    0,    0,    0,    0, -220,    0,
 };
 static const YYINT yyrindex[] = {                         0,
-    0,    1,   10,    0,    0,    0,   26,    0,    0,    4,
-    0,    5,   35,    0,   44,    9,   17,   48,    0,   14,
-    0,    0,    0,    0,    0,    0,    0,   13,    0,    0,
-    0,    0,    0,    0,    0,   19,    0,
+    0,    1,   10,    0,    0,    0,    0,   20,    0,    0,
+    4,    0,    5,   24,    0,   26,    9,   17,   28,    0,
+   14,    0,    0,    0,    0,    0,    0,    0,   13,    0,
+    0,    0,    0,    0,    0,    0,   19,    0,
 };
-static const YYINT yygindex[] = {                       -15,
-   20,   43,    6,    0,  -11,   15,    0,    0,    0,
+static const YYINT yygindex[] = {                         0,
+  -13,   22,   15,   16,    0,  -16,   -3,    0,    0,    0,
 };
 #define YYTABLESIZE 283
-static const YYINT yytable[] = {                         19,
-   25,    2,   31,   16,   11,   26,   32,   11,    8,    7,
-   33,   14,   19,    9,   34,   17,   15,   14,   18,   35,
-   20,   21,   12,   20,   26,    6,   15,   16,    1,    2,
-    3,    4,   18,   36,    5,   22,   23,   24,   25,   16,
-    1,    1,    2,    4,    4,    2,    3,    3,   13,    0,
-   37,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+static const YYINT yytable[] = {                          2,
+   26,   27,   20,   17,   12,   32,    2,    3,    9,    8,
+   33,   34,   20,   10,   35,   36,   16,   12,   19,    7,
+   27,   14,   15,    6,   13,    5,   18,    4,   15,   16,
+   17,   21,   22,   38,   21,   19,   23,   24,   25,   26,
+    0,    1,   17,    0,   37,    1,    2,    3,    4,    1,
+    2,    0,    4,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -250,18 +265,18 @@ static const YYINT yytable[] = {                         19,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,   25,   25,   25,
-   25,    0,   25,    0,   25,   25,   11,   16,   11,   11,
-    8,    7,    8,    8,    7,    9,   19,    0,    9,   15,
-   15,   18,   18,
+    0,    0,    0,    0,    0,    0,    0,   26,   26,   26,
+   26,    0,   26,    0,   26,   26,   12,   17,   12,   12,
+    9,    8,    9,    9,    8,   10,   20,    0,   10,   16,
+   16,   19,   19,
 };
-static const YYINT yycheck[] = {                         15,
-    0,  263,   18,    0,    0,   17,  261,    2,    0,    0,
-  261,    6,    0,    0,  261,   10,    0,   12,    0,  261,
-   15,   16,    3,   18,   36,    0,    7,    8,  262,  263,
-  264,  265,   13,   28,    0,  257,  258,  259,  260,   20,
-  262,  262,  263,    0,  265,  263,  264,    0,    6,   -1,
-   36,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+static const YYINT yycheck[] = {                        263,
+    0,   18,   16,    0,    0,   19,  263,  264,    0,    0,
+  261,  261,    0,    0,  261,  261,    0,    2,    0,    0,
+   37,    7,    7,    0,    3,    0,   11,    0,   13,    8,
+    9,   16,   17,   37,   19,   14,  257,  258,  259,  260,
+   -1,  262,   21,   -1,   29,  262,  263,  264,  265,  262,
+  263,   -1,  265,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
@@ -291,7 +306,7 @@ static const YYINT yycheck[] = {                         15,
 #define YYDEBUG 1
 #endif
 #define YYMAXTOKEN 265
-#define YYUNDFTOKEN 277
+#define YYUNDFTOKEN 278
 #define YYTRANSLATE(a) ((a) > YYMAXTOKEN ? YYUNDFTOKEN : (a))
 #if YYDEBUG
 static const char *const yyname[] = {
@@ -303,11 +318,12 @@ static const char *const yyname[] = {
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"DECIMAL","HEXADECIMAL","OCTAL",
-"BINARY","VALUE","ID","DIVIDER","NEWLINE","LABEL",0,0,0,0,0,0,0,0,0,0,0,
+"BINARY","VALUE","ID","DIVIDER","NEWLINE","LABEL",0,0,0,0,0,0,0,0,0,0,0,0,
 "illegal-symbol",
 };
 static const char *const yyrule[] = {
-"$accept : text",
+"$accept : _text",
+"_text : text",
 "text : newLine line newLine text",
 "text : line newLine text",
 "text : newLine line newLine",
@@ -374,23 +390,126 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 189 "test1.y"
+#line 206 "test1.y"
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-/*int[] toBinaryConvert(int num) {
-	char result[MAX_BINARY_LENGTH];
-	for (int i = MAX_BINARY_LENGTH-1; i >= 0; i--) {
-		result[i] = num%2;
-		num = num/2;
+void toBaseConvert(int num, int base, int digits) {
+	for (int i = digits-1; i >= 0; i-=1) 
+	{
+		stringBuffer[i] = num % base + '0';
+		num = num / base;
 	}
-	return result;
-}*/
+	stringBuffer[digits] = '\0';
+}
+
+void storeAnalizeBuf(char * msg) {
+	analyzeBuf.stored++;
+	if (analyzeBuf.stored > analyzeBuf.size) 
+	{
+		analyzeBuf.size+=ANALYZE_BUF_ALLOCATE_SIZE;
+		analyzeBuf.p = (message*)realloc(analyzeBuf.p, analyzeBuf.size * sizeof(message));
+	}
+	strcpy(analyzeBuf.p[analyzeBuf.stored-1].content, msg);
+}
+
+void storeNumToAnalizeBuffer(int num, int base, int digits){
+	char temp[MSG_LENGTH];
+	toBaseConvert(num, base, digits);
+	sprintf(temp, "%s\n", stringBuffer);
+	storeAnalizeBuf(temp);
+}
+
+internalBinaryStore() {
+	const int base = 2;
+	const int digits = 8;
+	const int arg1 = opDesc.arg1;
+	const int arg2 = opDesc.arg2;
+	if (strcmp(opDesc.opName, "MOV") == 0)
+	{
+		storeNumToAnalizeBuffer(1, base, digits);
+		storeNumToAnalizeBuffer(arg1, base, digits);
+		storeNumToAnalizeBuffer(arg2, base, digits);
+	}
+	else if (strcmp(opDesc.opName, "MVI") == 0)
+	{
+		storeNumToAnalizeBuffer(0, base, digits);
+		storeNumToAnalizeBuffer(arg1, base, digits);
+		storeNumToAnalizeBuffer(arg2, base, digits);
+	}
+	else if (strcmp(opDesc.opName, "LXI") == 0)
+	{
+		
+	}
+	else if (strcmp(opDesc.opName, "LDA") == 0)
+	{
+		
+	}
+	else if (strcmp(opDesc.opName, "LDAX") == 0)
+	{
+		
+	}
+	else if (strcmp(opDesc.opName, "STA") == 0)
+	{
+		
+	}
+	else if (strcmp(opDesc.opName, "STAX") == 0)
+	{
+		
+	}
+}
 
 void getCommand(enum OUTPUTMODE mode) {
 	readingCommandLine = 0;
-	printf("\x1b[32;1mparsed: %s %d %d\n\x1b[0m", opDesc.opName, opDesc.arg1, opDesc.arg2);
-	
+	char temp[MSG_LENGTH];
+	switch (mode) 
+	{			
+		case M_CHECK:
+			switch (opDesc.expectedArgs)
+			{
+				case 1:
+					sprintf(temp, "%s %d\n", opDesc.opName, opDesc.arg1);
+					storeAnalizeBuf(temp);
+					break;
+				case 2:
+					sprintf(temp, "%s %d %d\n", opDesc.opName, opDesc.arg1, opDesc.arg2);
+					storeAnalizeBuf(temp);
+					break;
+				default:
+					printf("<ERROR> too much args");
+					break;
+			}
+			break;
+		case M_BINARY:
+			internalBinaryStore();
+			break;
+		case M_OCTAL:
+			/*TODO*/
+			break;
+		case M_NUMERIC:
+			/*TODO*/
+			break;
+		default:
+			printf("<ERROR> unrecognized mode");
+			break;
+	}
+}
+
+void analyzeBufInit() {
+	free(analyzeBuf.p);
+	analyzeBuf.stored = 0;
+	analyzeBuf.size = ANALYZE_BUF_INIT_SIZE;
+	analyzeBuf.p = (message *)calloc(ANALYZE_BUF_INIT_SIZE, sizeof(message));
+}
+
+void printAnalyzeBuf() {
+	printf("\n\x1b[30;1mCode analysis results:\n\x1b[0m______________________________\n");
+	for (int i = 0; i < analyzeBuf.stored; i++) 
+	{
+		toBaseConvert(i, 2, 8);	
+		printf("%s: %s", stringBuffer, analyzeBuf.p[i].content);
+	}
+	printf("\n");
 }
 
 void numArgAnalyze(int arg) {
@@ -450,13 +569,17 @@ void addOpDescArgument(int arg) {
 				break;
 		}
 	}
-	/*if (opDesc.args == opDesc.expectedArgs)
-		printf("parsed: %s %d %d\n", opDesc.opName, opDesc.arg1, opDesc.arg2);*/
 }
 
 
 //Инициализация переменной под новую операцию
 void operationAnalyze(char * name) {
+	//Только вошли в программу?
+	if (inProgram == 0)
+	{
+		analyzeBufInit();
+		inProgram = 1;
+	}
 	//Проверяем, читаем уже команду или пока нет
 	if (readingCommandLine == 0) 
 	{
@@ -629,7 +752,7 @@ int argConvert(char * arg) {
 LDAX|STAX|IN|OUT|PUSH|POP|PCHL|RST|ADD|ADI|ADC|ACI|SUB|SUI|SBB|SBI|CMP|CPI|INR|INX|DCR|DCX|DAD|ANA|ANI|XRA|XRI|ORA|ORI;
 
 MOV|MVI|LXI|LXISP|LDA|STA|LHLD|SHLD|JMP|CALL|JNZ|JZ|JNC|JC|JPO|JPE|JP|JM|CNZ|CZ|CNC|CC|CPO|CPE|CP|CM;*/
-#line 633 "y.tab.c"
+#line 756 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -832,126 +955,130 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 141 "test1.y"
-	{}
+#line 156 "test1.y"
+	{ printAnalyzeBuf(); }
 break;
 case 2:
-#line 142 "test1.y"
+#line 158 "test1.y"
 	{}
 break;
 case 3:
-#line 143 "test1.y"
+#line 159 "test1.y"
 	{}
 break;
 case 4:
-#line 144 "test1.y"
+#line 160 "test1.y"
 	{}
 break;
 case 5:
-#line 145 "test1.y"
+#line 161 "test1.y"
 	{}
 break;
 case 6:
-#line 146 "test1.y"
+#line 162 "test1.y"
 	{}
 break;
 case 7:
-#line 148 "test1.y"
+#line 163 "test1.y"
 	{}
 break;
 case 8:
-#line 149 "test1.y"
+#line 165 "test1.y"
 	{}
 break;
 case 9:
-#line 150 "test1.y"
+#line 166 "test1.y"
 	{}
 break;
 case 10:
-#line 151 "test1.y"
+#line 167 "test1.y"
 	{}
 break;
 case 11:
-#line 152 "test1.y"
+#line 168 "test1.y"
 	{}
 break;
 case 12:
-#line 154 "test1.y"
+#line 169 "test1.y"
+	{}
+break;
+case 13:
+#line 171 "test1.y"
 	{ 
 										/*printf("line parsed\n");*/
 										getCommand(globalMode);
 									 	readingCommandLine = 0;
 									}
 break;
-case 13:
-#line 159 "test1.y"
+case 14:
+#line 176 "test1.y"
 	{ 
 										/*printf("line parsed\n");*/
 										getCommand(globalMode);
 								 		readingCommandLine = 0;
 									}
 break;
-case 14:
-#line 165 "test1.y"
-	{}
-break;
 case 15:
-#line 166 "test1.y"
+#line 182 "test1.y"
 	{}
 break;
 case 16:
-#line 167 "test1.y"
+#line 183 "test1.y"
 	{}
 break;
 case 17:
-#line 169 "test1.y"
+#line 184 "test1.y"
 	{}
 break;
 case 18:
-#line 170 "test1.y"
+#line 186 "test1.y"
 	{}
 break;
-case 20:
-#line 173 "test1.y"
+case 19:
+#line 187 "test1.y"
 	{}
 break;
 case 21:
-#line 174 "test1.y"
-	{ numArgAnalyze(yystack.l_mark[0].val); }
-break;
-case 22:
-#line 176 "test1.y"
-	{/*Потом отсюда расширим арифметику*/}
-break;
-case 23:
-#line 178 "test1.y"
-	{ printf("%s\n", yystack.l_mark[0].str); operationAnalyze(yystack.l_mark[0].str); }
-break;
-case 24:
-#line 180 "test1.y"
+#line 190 "test1.y"
 	{}
 break;
+case 22:
+#line 191 "test1.y"
+	{ numArgAnalyze(yystack.l_mark[0].val); }
+break;
+case 23:
+#line 193 "test1.y"
+	{/*Потом отсюда расширим арифметику*/}
+break;
+case 24:
+#line 195 "test1.y"
+	{ operationAnalyze(yystack.l_mark[0].str); }
+break;
 case 25:
-#line 181 "test1.y"
+#line 197 "test1.y"
 	{}
 break;
 case 26:
-#line 183 "test1.y"
-	{ yyval.val = toDecimalConvert(10, yystack.l_mark[0].str); }
+#line 198 "test1.y"
+	{}
 break;
 case 27:
-#line 184 "test1.y"
-	{ yyval.val = toDecimalConvert(16, yystack.l_mark[0].str); }
+#line 200 "test1.y"
+	{ yyval.val = toDecimalConvert(10, yystack.l_mark[0].str); }
 break;
 case 28:
-#line 185 "test1.y"
-	{ yyval.val = toDecimalConvert(8, yystack.l_mark[0].str); }
+#line 201 "test1.y"
+	{ yyval.val = toDecimalConvert(16, yystack.l_mark[0].str); }
 break;
 case 29:
-#line 186 "test1.y"
+#line 202 "test1.y"
+	{ yyval.val = toDecimalConvert(8, yystack.l_mark[0].str); }
+break;
+case 30:
+#line 203 "test1.y"
 	{ yyval.val = toDecimalConvert(2, yystack.l_mark[0].str); }
 break;
-#line 955 "y.tab.c"
+#line 1082 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

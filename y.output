@@ -1,46 +1,48 @@
-   0  $accept : text $end
+   0  $accept : _text $end
 
-   1  text : newLine line newLine text
-   2       | line newLine text
-   3       | newLine line newLine
-   4       | line newLine
-   5       | newLine line
-   6       | line
+   1  _text : text
 
-   7  newLine : NEWLINE
-   8          | divider newLine
-   9          | newLine divider
-  10          | divider newLine divider
-  11          | NEWLINE newLine
+   2  text : newLine line newLine text
+   3       | line newLine text
+   4       | newLine line newLine
+   5       | line newLine
+   6       | newLine line
+   7       | line
 
-  12  line : command
-  13       | LABEL
+   8  newLine : NEWLINE
+   9          | divider newLine
+  10          | newLine divider
+  11          | divider newLine divider
+  12          | NEWLINE newLine
 
-  14  command : id divider arguments
-  15          | id divider
-  16          | id
+  13  line : command
+  14       | LABEL
 
-  17  arguments : arg divider arguments
-  18            | arg divider
-  19            | arg
+  15  command : id divider arguments
+  16          | id divider
+  17          | id
 
-  20  arg : id
-  21      | ariphmetic
+  18  arguments : arg divider arguments
+  19            | arg divider
+  20            | arg
 
-  22  ariphmetic : num
+  21  arg : id
+  22      | ariphmetic
 
-  23  id : ID
+  23  ariphmetic : num
 
-  24  divider : DIVIDER divider
-  25          | DIVIDER
+  24  id : ID
 
-  26  num : DECIMAL VALUE
-  27      | HEXADECIMAL VALUE
-  28      | OCTAL VALUE
-  29      | BINARY VALUE
+  25  divider : DIVIDER divider
+  26          | DIVIDER
+
+  27  num : DECIMAL VALUE
+  28      | HEXADECIMAL VALUE
+  29      | OCTAL VALUE
+  30      | BINARY VALUE
 
 state 0
-	$accept : . text $end  (0)
+	$accept : . _text $end  (0)
 
 	ID  shift 1
 	DIVIDER  shift 2
@@ -48,170 +50,231 @@ state 0
 	LABEL  shift 4
 	.  error
 
-	text  goto 5
-	newLine  goto 6
-	line  goto 7
-	divider  goto 8
-	command  goto 9
-	id  goto 10
+	_text  goto 5
+	text  goto 6
+	newLine  goto 7
+	line  goto 8
+	divider  goto 9
+	command  goto 10
+	id  goto 11
 
 
 state 1
-	id : ID .  (23)
+	id : ID .  (24)
 
-	.  reduce 23
+	.  reduce 24
 
 
-2: shift/reduce conflict (shift 2, reduce 25) on DIVIDER
+2: shift/reduce conflict (shift 2, reduce 26) on DIVIDER
 state 2
-	divider : DIVIDER . divider  (24)
-	divider : DIVIDER .  (25)
+	divider : DIVIDER . divider  (25)
+	divider : DIVIDER .  (26)
 
 	DIVIDER  shift 2
-	$end  reduce 25
-	DECIMAL  reduce 25
-	HEXADECIMAL  reduce 25
-	OCTAL  reduce 25
-	BINARY  reduce 25
-	ID  reduce 25
-	NEWLINE  reduce 25
-	LABEL  reduce 25
+	$end  reduce 26
+	DECIMAL  reduce 26
+	HEXADECIMAL  reduce 26
+	OCTAL  reduce 26
+	BINARY  reduce 26
+	ID  reduce 26
+	NEWLINE  reduce 26
+	LABEL  reduce 26
 
-	divider  goto 11
+	divider  goto 12
 
 
-3: shift/reduce conflict (shift 2, reduce 7) on DIVIDER
-3: shift/reduce conflict (shift 3, reduce 7) on NEWLINE
+3: shift/reduce conflict (shift 2, reduce 8) on DIVIDER
+3: shift/reduce conflict (shift 3, reduce 8) on NEWLINE
 state 3
-	newLine : NEWLINE .  (7)
-	newLine : NEWLINE . newLine  (11)
+	newLine : NEWLINE .  (8)
+	newLine : NEWLINE . newLine  (12)
 
 	DIVIDER  shift 2
 	NEWLINE  shift 3
-	$end  reduce 7
-	ID  reduce 7
-	LABEL  reduce 7
+	$end  reduce 8
+	ID  reduce 8
+	LABEL  reduce 8
 
-	newLine  goto 12
-	divider  goto 8
+	newLine  goto 13
+	divider  goto 9
 
 
 state 4
-	line : LABEL .  (13)
+	line : LABEL .  (14)
 
-	.  reduce 13
+	.  reduce 14
 
 
 state 5
-	$accept : text . $end  (0)
+	$accept : _text . $end  (0)
 
 	$end  accept
 
 
 state 6
-	text : newLine . line newLine text  (1)
-	text : newLine . line newLine  (3)
-	text : newLine . line  (5)
-	newLine : newLine . divider  (9)
+	_text : text .  (1)
+
+	.  reduce 1
+
+
+state 7
+	text : newLine . line newLine text  (2)
+	text : newLine . line newLine  (4)
+	text : newLine . line  (6)
+	newLine : newLine . divider  (10)
 
 	ID  shift 1
 	DIVIDER  shift 2
 	LABEL  shift 4
 	.  error
 
-	line  goto 13
-	divider  goto 14
-	command  goto 9
-	id  goto 10
-
-
-state 7
-	text : line . newLine text  (2)
-	text : line . newLine  (4)
-	text : line .  (6)
-
-	DIVIDER  shift 2
-	NEWLINE  shift 3
-	$end  reduce 6
-
-	newLine  goto 15
-	divider  goto 8
+	line  goto 14
+	divider  goto 15
+	command  goto 10
+	id  goto 11
 
 
 state 8
-	newLine : divider . newLine  (8)
-	newLine : divider . newLine divider  (10)
+	text : line . newLine text  (3)
+	text : line . newLine  (5)
+	text : line .  (7)
+
+	DIVIDER  shift 2
+	NEWLINE  shift 3
+	$end  reduce 7
+
+	newLine  goto 16
+	divider  goto 9
+
+
+state 9
+	newLine : divider . newLine  (9)
+	newLine : divider . newLine divider  (11)
 
 	DIVIDER  shift 2
 	NEWLINE  shift 3
 	.  error
 
-	newLine  goto 16
-	divider  goto 8
+	newLine  goto 17
+	divider  goto 9
 
 
-state 9
-	line : command .  (12)
-
-	.  reduce 12
-
-
-10: shift/reduce conflict (shift 2, reduce 16) on DIVIDER
 state 10
-	command : id . divider arguments  (14)
-	command : id . divider  (15)
-	command : id .  (16)
+	line : command .  (13)
 
-	DIVIDER  shift 2
-	$end  reduce 16
-	NEWLINE  reduce 16
-
-	divider  goto 17
+	.  reduce 13
 
 
+11: shift/reduce conflict (shift 2, reduce 17) on DIVIDER
 state 11
-	divider : DIVIDER divider .  (24)
+	command : id . divider arguments  (15)
+	command : id . divider  (16)
+	command : id .  (17)
 
-	.  reduce 24
+	DIVIDER  shift 2
+	$end  reduce 17
+	NEWLINE  reduce 17
+
+	divider  goto 18
 
 
-12: shift/reduce conflict (shift 2, reduce 11) on DIVIDER
 state 12
-	newLine : newLine . divider  (9)
-	newLine : NEWLINE newLine .  (11)
+	divider : DIVIDER divider .  (25)
 
-	DIVIDER  shift 2
-	$end  reduce 11
-	ID  reduce 11
-	NEWLINE  reduce 11
-	LABEL  reduce 11
-
-	divider  goto 14
+	.  reduce 25
 
 
+13: shift/reduce conflict (shift 2, reduce 12) on DIVIDER
 state 13
-	text : newLine line . newLine text  (1)
-	text : newLine line . newLine  (3)
-	text : newLine line .  (5)
+	newLine : newLine . divider  (10)
+	newLine : NEWLINE newLine .  (12)
 
 	DIVIDER  shift 2
-	NEWLINE  shift 3
-	$end  reduce 5
+	$end  reduce 12
+	ID  reduce 12
+	NEWLINE  reduce 12
+	LABEL  reduce 12
 
-	newLine  goto 18
-	divider  goto 8
+	divider  goto 15
 
 
 state 14
-	newLine : newLine divider .  (9)
+	text : newLine line . newLine text  (2)
+	text : newLine line . newLine  (4)
+	text : newLine line .  (6)
 
-	.  reduce 9
+	DIVIDER  shift 2
+	NEWLINE  shift 3
+	$end  reduce 6
+
+	newLine  goto 19
+	divider  goto 9
 
 
 state 15
-	text : line newLine . text  (2)
-	text : line newLine .  (4)
-	newLine : newLine . divider  (9)
+	newLine : newLine divider .  (10)
+
+	.  reduce 10
+
+
+state 16
+	text : line newLine . text  (3)
+	text : line newLine .  (5)
+	newLine : newLine . divider  (10)
+
+	ID  shift 1
+	DIVIDER  shift 2
+	NEWLINE  shift 3
+	LABEL  shift 4
+	$end  reduce 5
+
+	text  goto 20
+	newLine  goto 7
+	line  goto 8
+	divider  goto 21
+	command  goto 10
+	id  goto 11
+
+
+17: shift/reduce conflict (shift 2, reduce 9) on DIVIDER
+state 17
+	newLine : divider newLine .  (9)
+	newLine : newLine . divider  (10)
+	newLine : divider newLine . divider  (11)
+
+	DIVIDER  shift 2
+	$end  reduce 9
+	ID  reduce 9
+	NEWLINE  reduce 9
+	LABEL  reduce 9
+
+	divider  goto 22
+
+
+state 18
+	command : id divider . arguments  (15)
+	command : id divider .  (16)
+
+	DECIMAL  shift 23
+	HEXADECIMAL  shift 24
+	OCTAL  shift 25
+	BINARY  shift 26
+	ID  shift 1
+	$end  reduce 16
+	DIVIDER  reduce 16
+	NEWLINE  reduce 16
+
+	id  goto 27
+	arguments  goto 28
+	arg  goto 29
+	ariphmetic  goto 30
+	num  goto 31
+
+
+state 19
+	text : newLine line newLine . text  (2)
+	text : newLine line newLine .  (4)
+	newLine : newLine . divider  (10)
 
 	ID  shift 1
 	DIVIDER  shift 2
@@ -219,237 +282,183 @@ state 15
 	LABEL  shift 4
 	$end  reduce 4
 
-	text  goto 19
-	newLine  goto 6
-	line  goto 7
-	divider  goto 20
-	command  goto 9
-	id  goto 10
-
-
-16: shift/reduce conflict (shift 2, reduce 8) on DIVIDER
-state 16
-	newLine : divider newLine .  (8)
-	newLine : newLine . divider  (9)
-	newLine : divider newLine . divider  (10)
-
-	DIVIDER  shift 2
-	$end  reduce 8
-	ID  reduce 8
-	NEWLINE  reduce 8
-	LABEL  reduce 8
-
+	text  goto 32
+	newLine  goto 7
+	line  goto 8
 	divider  goto 21
+	command  goto 10
+	id  goto 11
 
 
-state 17
-	command : id divider . arguments  (14)
-	command : id divider .  (15)
-
-	DECIMAL  shift 22
-	HEXADECIMAL  shift 23
-	OCTAL  shift 24
-	BINARY  shift 25
-	ID  shift 1
-	$end  reduce 15
-	DIVIDER  reduce 15
-	NEWLINE  reduce 15
-
-	id  goto 26
-	arguments  goto 27
-	arg  goto 28
-	ariphmetic  goto 29
-	num  goto 30
-
-
-state 18
-	text : newLine line newLine . text  (1)
-	text : newLine line newLine .  (3)
-	newLine : newLine . divider  (9)
-
-	ID  shift 1
-	DIVIDER  shift 2
-	NEWLINE  shift 3
-	LABEL  shift 4
-	$end  reduce 3
-
-	text  goto 31
-	newLine  goto 6
-	line  goto 7
-	divider  goto 20
-	command  goto 9
-	id  goto 10
-
-
-state 19
-	text : line newLine text .  (2)
-
-	.  reduce 2
-
-
-20: shift/reduce conflict (shift 2, reduce 9) on DIVIDER
-20: shift/reduce conflict (shift 3, reduce 9) on NEWLINE
 state 20
-	newLine : divider . newLine  (8)
-	newLine : newLine divider .  (9)
-	newLine : divider . newLine divider  (10)
+	text : line newLine text .  (3)
+
+	.  reduce 3
+
+
+21: shift/reduce conflict (shift 2, reduce 10) on DIVIDER
+21: shift/reduce conflict (shift 3, reduce 10) on NEWLINE
+state 21
+	newLine : divider . newLine  (9)
+	newLine : newLine divider .  (10)
+	newLine : divider . newLine divider  (11)
 
 	DIVIDER  shift 2
 	NEWLINE  shift 3
-	$end  reduce 9
-	ID  reduce 9
-	LABEL  reduce 9
+	$end  reduce 10
+	ID  reduce 10
+	LABEL  reduce 10
 
-	newLine  goto 16
-	divider  goto 8
-
-
-21: reduce/reduce conflict (reduce 9, reduce 10) on $end
-21: reduce/reduce conflict (reduce 9, reduce 10) on ID
-21: reduce/reduce conflict (reduce 9, reduce 10) on DIVIDER
-21: reduce/reduce conflict (reduce 9, reduce 10) on NEWLINE
-21: reduce/reduce conflict (reduce 9, reduce 10) on LABEL
-state 21
-	newLine : newLine divider .  (9)
-	newLine : divider newLine divider .  (10)
-
-	.  reduce 9
+	newLine  goto 17
+	divider  goto 9
 
 
+22: reduce/reduce conflict (reduce 10, reduce 11) on $end
+22: reduce/reduce conflict (reduce 10, reduce 11) on ID
+22: reduce/reduce conflict (reduce 10, reduce 11) on DIVIDER
+22: reduce/reduce conflict (reduce 10, reduce 11) on NEWLINE
+22: reduce/reduce conflict (reduce 10, reduce 11) on LABEL
 state 22
-	num : DECIMAL . VALUE  (26)
+	newLine : newLine divider .  (10)
+	newLine : divider newLine divider .  (11)
 
-	VALUE  shift 32
-	.  error
+	.  reduce 10
 
 
 state 23
-	num : HEXADECIMAL . VALUE  (27)
+	num : DECIMAL . VALUE  (27)
 
 	VALUE  shift 33
 	.  error
 
 
 state 24
-	num : OCTAL . VALUE  (28)
+	num : HEXADECIMAL . VALUE  (28)
 
 	VALUE  shift 34
 	.  error
 
 
 state 25
-	num : BINARY . VALUE  (29)
+	num : OCTAL . VALUE  (29)
 
 	VALUE  shift 35
 	.  error
 
 
 state 26
-	arg : id .  (20)
+	num : BINARY . VALUE  (30)
 
-	.  reduce 20
+	VALUE  shift 36
+	.  error
 
 
 state 27
-	command : id divider arguments .  (14)
-
-	.  reduce 14
-
-
-28: shift/reduce conflict (shift 2, reduce 19) on DIVIDER
-state 28
-	arguments : arg . divider arguments  (17)
-	arguments : arg . divider  (18)
-	arguments : arg .  (19)
-
-	DIVIDER  shift 2
-	$end  reduce 19
-	NEWLINE  reduce 19
-
-	divider  goto 36
-
-
-state 29
-	arg : ariphmetic .  (21)
+	arg : id .  (21)
 
 	.  reduce 21
 
 
+state 28
+	command : id divider arguments .  (15)
+
+	.  reduce 15
+
+
+29: shift/reduce conflict (shift 2, reduce 20) on DIVIDER
+state 29
+	arguments : arg . divider arguments  (18)
+	arguments : arg . divider  (19)
+	arguments : arg .  (20)
+
+	DIVIDER  shift 2
+	$end  reduce 20
+	NEWLINE  reduce 20
+
+	divider  goto 37
+
+
 state 30
-	ariphmetic : num .  (22)
+	arg : ariphmetic .  (22)
 
 	.  reduce 22
 
 
 state 31
-	text : newLine line newLine text .  (1)
+	ariphmetic : num .  (23)
 
-	.  reduce 1
+	.  reduce 23
 
 
 state 32
-	num : DECIMAL VALUE .  (26)
+	text : newLine line newLine text .  (2)
 
-	.  reduce 26
+	.  reduce 2
 
 
 state 33
-	num : HEXADECIMAL VALUE .  (27)
+	num : DECIMAL VALUE .  (27)
 
 	.  reduce 27
 
 
 state 34
-	num : OCTAL VALUE .  (28)
+	num : HEXADECIMAL VALUE .  (28)
 
 	.  reduce 28
 
 
 state 35
-	num : BINARY VALUE .  (29)
+	num : OCTAL VALUE .  (29)
 
 	.  reduce 29
 
 
 state 36
-	arguments : arg divider . arguments  (17)
-	arguments : arg divider .  (18)
+	num : BINARY VALUE .  (30)
 
-	DECIMAL  shift 22
-	HEXADECIMAL  shift 23
-	OCTAL  shift 24
-	BINARY  shift 25
-	ID  shift 1
-	$end  reduce 18
-	DIVIDER  reduce 18
-	NEWLINE  reduce 18
-
-	id  goto 26
-	arguments  goto 37
-	arg  goto 28
-	ariphmetic  goto 29
-	num  goto 30
+	.  reduce 30
 
 
 state 37
-	arguments : arg divider arguments .  (17)
+	arguments : arg divider . arguments  (18)
+	arguments : arg divider .  (19)
 
-	.  reduce 17
+	DECIMAL  shift 23
+	HEXADECIMAL  shift 24
+	OCTAL  shift 25
+	BINARY  shift 26
+	ID  shift 1
+	$end  reduce 19
+	DIVIDER  reduce 19
+	NEWLINE  reduce 19
+
+	id  goto 27
+	arguments  goto 38
+	arg  goto 29
+	ariphmetic  goto 30
+	num  goto 31
+
+
+state 38
+	arguments : arg divider arguments .  (18)
+
+	.  reduce 18
 
 
 Rules never reduced:
-	newLine : divider newLine divider  (10)
+	newLine : divider newLine divider  (11)
 
 
 State 2 contains 1 shift/reduce conflict.
 State 3 contains 2 shift/reduce conflicts.
-State 10 contains 1 shift/reduce conflict.
-State 12 contains 1 shift/reduce conflict.
-State 16 contains 1 shift/reduce conflict.
-State 20 contains 2 shift/reduce conflicts.
-State 21 contains 5 reduce/reduce conflicts.
-State 28 contains 1 shift/reduce conflict.
+State 11 contains 1 shift/reduce conflict.
+State 13 contains 1 shift/reduce conflict.
+State 17 contains 1 shift/reduce conflict.
+State 21 contains 2 shift/reduce conflicts.
+State 22 contains 5 reduce/reduce conflicts.
+State 29 contains 1 shift/reduce conflict.
 
 
-11 terminals, 11 nonterminals
-30 grammar rules, 38 states
+11 terminals, 12 nonterminals
+31 grammar rules, 39 states
