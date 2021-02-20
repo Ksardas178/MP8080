@@ -1,2 +1,4 @@
 MOV C H
 MOV 46
+MOV 57
+MOV hf

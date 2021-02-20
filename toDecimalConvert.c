@@ -1,3 +1,7 @@
+#include <string.h>
+#include "math.h"
+#include <stdio.h>
+
 int toDecimalConvert(int base, const char* sum) {
     int answer = 0;
     int power;

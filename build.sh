@@ -5,7 +5,7 @@ rm -f y.* a.out lex.yy.c
 yacc -vtd *.y
 #lex: option -s to supress default action ECHO
 lex -s *.l
-gcc -g *.c
+gcc -g *.c -lm
 #./a.out < test.txt 2 > err.txt
 #./a.out < test.txt 1 > result.txt
 ./a.out < test.txt

@@ -188,10 +188,6 @@ num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-int toDecimalConvert(int base, char * num) {
-	return 46;
-	/*TODO конвертер по разным основаниям в 10-чную систему*/
-}
 
 /*int[] toBinaryConvert(int num) {
 	char result[MAX_BINARY_LENGTH];

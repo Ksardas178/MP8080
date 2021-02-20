@@ -377,10 +377,6 @@ static YYSTACKDATA yystack;
 #line 189 "test1.y"
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-int toDecimalConvert(int base, char * num) {
-	return 46;
-	/*TODO конвертер по разным основаниям в 10-чную систему*/
-}
 
 /*int[] toBinaryConvert(int num) {
 	char result[MAX_BINARY_LENGTH];
@@ -633,7 +629,7 @@ int argConvert(char * arg) {
 LDAX|STAX|IN|OUT|PUSH|POP|PCHL|RST|ADD|ADI|ADC|ACI|SUB|SUI|SBB|SBI|CMP|CPI|INR|INX|DCR|DCX|DAD|ANA|ANI|XRA|XRI|ORA|ORI;
 
 MOV|MVI|LXI|LXISP|LDA|STA|LHLD|SHLD|JMP|CALL|JNZ|JZ|JNC|JC|JPO|JPE|JP|JM|CNZ|CZ|CNC|CC|CPO|CPE|CP|CM;*/
-#line 637 "y.tab.c"
+#line 633 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -955,7 +951,7 @@ case 29:
 #line 186 "test1.y"
 	{ yyval.val = toDecimalConvert(2, yystack.l_mark[0].str); }
 break;
-#line 959 "y.tab.c"
+#line 955 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
