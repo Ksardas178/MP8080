@@ -191,12 +191,57 @@ int toBaseConvert(int base, int num) {
 подумать над кнцепцией (нормальная ли вообще?)*/
 //Встречена команда?
 int isCommandName(char * arg) {
+	
+}
+
+int isZeroArgCommand(char * arg) {
 	const char * a[] =
 		{"XCHG", "XTHL", "SPHL", "PCHL", "RET", 
 		 "RNZ", "RZ", "RNC", "RC", "RPO", "RPE", 
 		 "RP", "RM", "EI", "DI", "NOP", "HLT", 
 		 "DAA", "CMA", "RLC", "RRC", "RAL", 
 		 "RAR", "STC", "CMC" };
+	int length = sizeof(a)/sizeof(a[0]);
+	for (int i = 0; i < length; i++)
+	{
+		if (strcmp(arg, a[i]) == 0) 
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int isOneArgCommand(char * arg) {
+	const char * a[] =
+		{"LDAX", "STAX", "IN", "OUT", 
+		 "PUSH", "POP", "PCHL", "RST", 
+		 "ADD", "ADI", "ADC", "ACI", 
+		 "SUB", "SUI", "SBB", "SBI", 
+		 "CMP", "CPI", "INR", "INX", 
+		 "DCR", "DCX", "DAD", "ANA", 
+		 "ANI", "XRA", "XRI", "ORA", 
+		 "ORI"};
+	int length = sizeof(a)/sizeof(a[0]);
+	for (int i = 0; i < length; i++)
+	{
+		if (strcmp(arg, a[i]) == 0) 
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int isTwoArgCommand(char * arg) {
+	const char * a[] =
+		{"MOV", "MVI", "LXI", "LXISP", 
+		 "LDA", "STA", "LHLD", "SHLD", 
+		 "JMP", "CALL", "JNZ", "JZ", 
+		 "JNC", "JC", "JPO", "JPE", 
+		 "JP", "JM", "CNZ", "CZ", 
+		 "CNC", "CC", "CPO", "CPE", 
+		 "CP", "CM"};
 	int length = sizeof(a)/sizeof(a[0]);
 	for (int i = 0; i < length; i++)
 	{
