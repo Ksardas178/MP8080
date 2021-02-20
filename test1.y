@@ -101,22 +101,18 @@ enum ARGTYPE
 
 //Описание команды:
 typedef struct {
+	int expectedArgs;
 	int args;
-	enum OPCODE opCode;
-} commandInfo;
-
-typedef struct {
-	int val;
-	char * str;
-} variousInfo;	
-
-//Описание аргумента:
-typedef struct {
-	enum ARGTYPE argType;
-	variousInfo * arg;//Число либо строка в зависимости от типа
-} argumentInfo;
-
-
+	char * opName;
+	int	 arg1;
+	int arg2;
+} operationDescription;
+	
+//Информация об анализируемой операции
+operationDescription opDesc;
+	
+//Флаги
+int readingCommandLine = 0;
 	
 %}
 //=====================================================
@@ -141,9 +137,12 @@ typedef struct {
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-text: line newLine text	{}
-	| line newLine		{}
-	| line				{}
+text: newLine line newLine text	{}
+	| line newLine text			{}
+	| newLine line newLine		{}
+	| line newLine				{}
+	| newLine line				{}
+	| line						{}
 
 newLine	: NEWLINE					{}
 		| divider newLine 			{}
@@ -151,13 +150,21 @@ newLine	: NEWLINE					{}
 		| divider newLine divider	{}
 		| NEWLINE newLine			{}
 
-line: command 						{ printf("line parsed\n");}
-	| LABEL			 			 	{ printf("line parsed\n");}
+line: command 						{ 
+										printf("line parsed\n");
+									 	readingCommandLine = 0;
+									}
+	| LABEL			 			 	{ 
+										printf("line parsed\n");
+								 		readingCommandLine = 0;
+									}
 
 command	: 	id divider arguments	{}
+		|	id divider				{}
 		|	id						{}
 
 arguments	: arg divider arguments {}
+			| arg divider			{}
 			| arg
 
 arg	: id			{ if (isRegisterName($<str>1) == 1) printf("found\n");}
@@ -165,7 +172,7 @@ arg	: id			{ if (isRegisterName($<str>1) == 1) printf("found\n");}
 
 ariphmetic	: num	{/*Потом отсюда расширим арифметику*/}
 
-id	: ID	{ printf("%s\n", $1); }
+id	: ID	{ printf("%s\n", $1); operationAnalyze($1); }
 
 divider	: DIVIDER divider 	{}
 		| DIVIDER			{}
@@ -179,7 +186,6 @@ num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 int toDecimalConvert(int base, char * num) {
-	
 	return 0;
 	/*TODO конвертер по разным основаниям в 10-чную систему*/
 }
@@ -189,9 +195,45 @@ int toBaseConvert(int base, int num) {
 	/*TODO конвертер по разным основаниям в 8-чную систему*/
 }
 
-int inArray(char * a[], char * arg) {
-	int length = sizeof(a)/sizeof(a[0]);
-	for (int i = 0; i < length; i++)
+//Инициализация переменной под новую операцию
+void operationAnalyze(char * name) {
+	//Проверяем, читаем уже команду или пока нет
+	if (readingCommandLine == 0) 
+	{
+		int t = isCommandName(name);
+		if (t != -1)
+		{
+			opDesc.expectedArgs = t;
+			opDesc.args = 0;
+			readingCommandLine = 1;
+		}
+		else
+		{
+			printf("<ERROR> wrong command recieved\n");
+		}	
+	}
+	else if (isRegisterName(name) == 1)
+	{
+		switch (opDesc.args) {
+			case 1:
+				opDesc.arg1 = argConvert(name);
+				break;
+			case 2:
+				opDesc.arg2 = argConvert(name);
+				break;
+		}
+		opDesc.args++;
+		//Проверка на ожидаемое количество аргументов
+		if (opDesc.args > opDesc.expectedArgs) 
+		{
+			printf("<ERROR> expected %d argument(s)\n", opDesc.expectedArgs);
+		}
+	}
+}
+
+int inArray(char * a[], char * arg, int l) {
+	//int l = sizeof(a)/sizeof(a[0]);
+	for (int i = 0; i < l; i++)
 	{
 		if (strcmp(arg, a[i]) == 0) 
 		{
@@ -211,7 +253,8 @@ int isNArgCommand(char * arg, int n) {
 					 "RP", "RM", "EI", "DI", "NOP", "HLT", 
 					 "DAA", "CMA", "RLC", "RRC", "RAL", 
 					 "RAR", "STC", "CMC" };
-				return inArray(a, arg);
+				int l = sizeof(a)/sizeof(a[0]);
+				return inArray(a, arg, l);
 			}
 		case 1:
 			{
@@ -224,19 +267,21 @@ int isNArgCommand(char * arg, int n) {
 					 "DCR", "DCX", "DAD", "ANA", 
 					 "ANI", "XRA", "XRI", "ORA", 
 					 "ORI"};
-				return inArray(a, arg);
+				int l = sizeof(a)/sizeof(a[0]);
+				return inArray(a, arg, l);
 			}
 		case 2:
 			{
 				char * a[] =
-					{"MOV", "MVI", "LXI", "LXISP", 
-					 "LDA", "STA", "LHLD", "SHLD", 
+					{"MOV", "MVI", "LXI", "LDA", 
+					 "STA", "LHLD", "SHLD", 
 					 "JMP", "CALL", "JNZ", "JZ", 
 					 "JNC", "JC", "JPO", "JPE", 
 					 "JP", "JM", "CNZ", "CZ", 
 					 "CNC", "CC", "CPO", "CPE", 
 					 "CP", "CM"};
-				return inArray(a, arg);
+				int l = sizeof(a)/sizeof(a[0]);
+				return inArray(a, arg, l);
 			}
 		default:
 			printf("<ERROR> wrong argument amount\n");
@@ -244,17 +289,19 @@ int isNArgCommand(char * arg, int n) {
 	}
 }
 
-//После прогонки тестов можно убрать отладочную ошибку
-//и переписать return в цикл for
 //Встречена команда?
 int isCommandName(char * arg) {
-	int result = 0;
+	//Количество найденных совпадений (0 или 1 при корректной работе)
+	int found = 0;
+	//Количество аргументов (-1 - команда не найдена)
+	int result = -1;
 	//Цикл по возможному количеству арг-в
 	for (int i = 0; i <= 2; i++)
 	{
-		result+=isNArgCommand(arg, i);
+		found+=isNArgCommand(arg, i);
+		if (found > 0) result = i;
 	}
-	if (result > 1) 
+	if (found > 1) 
 	{
 		printf ("<ERROR> command duplicates in command list\n");
 	}
@@ -321,7 +368,7 @@ int argConvert(char * arg) {
 	else 
 	{
 		printf("<ERROR>: unexpected argument\n");
-		return 0;
+		return -1;
 	}
 }
 

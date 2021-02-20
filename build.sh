@@ -9,5 +9,6 @@ gcc -g *.c
 #./a.out < test.txt 2 > err.txt
 #./a.out < test.txt 1 > result.txt
 ./a.out < test.txt
+./a.out < test2.txt
 
 

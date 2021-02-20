@@ -1,3 +1,7 @@
+//comment
+MOV B H //comment
+LXI B H
+MVI B H
 Z Z Z
 	//newLine and tab
 TEST T

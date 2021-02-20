@@ -119,24 +119,20 @@ enum ARGTYPE
 
 /*Описание команды:*/
 typedef struct {
+	int expectedArgs;
 	int args;
-	enum OPCODE opCode;
-} commandInfo;
-
-typedef struct {
-	int val;
-	char * str;
-} variousInfo;	
-
-/*Описание аргумента:*/
-typedef struct {
-	enum ARGTYPE argType;
-	variousInfo * arg;/*Число либо строка в зависимости от типа*/
-} argumentInfo;
-
-
+	char * opName;
+	int	 arg1;
+	int arg2;
+} operationDescription;
 	
-#line 125 "test1.y"
+/*Информация об анализируемой операции*/
+operationDescription opDesc;
+	
+/*Флаги*/
+int readingCommandLine = 0;
+	
+#line 121 "test1.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -148,7 +144,7 @@ typedef union {
 	char * str;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 152 "y.tab.c"
+#line 148 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -193,45 +189,47 @@ extern int YYPARSE_DECL();
 #define YYERRCODE 256
 typedef short YYINT;
 static const YYINT yylhs[] = {                           -1,
-    0,    0,    0,    2,    2,    2,    2,    2,    1,    1,
-    4,    4,    6,    6,    7,    7,    8,    5,    3,    3,
-    9,    9,    9,    9,
+    0,    0,    0,    0,    0,    0,    1,    1,    1,    1,
+    1,    2,    2,    4,    4,    4,    6,    6,    6,    7,
+    7,    8,    5,    3,    3,    9,    9,    9,    9,
 };
 static const YYINT yylen[] = {                            2,
-    3,    2,    1,    1,    2,    2,    3,    2,    1,    1,
-    3,    1,    3,    1,    1,    1,    1,    1,    2,    1,
-    2,    2,    2,    2,
+    4,    3,    3,    2,    2,    1,    1,    2,    2,    3,
+    2,    1,    1,    3,    2,    1,    3,    2,    1,    1,
+    1,    1,    1,    2,    1,    2,    2,    2,    2,
 };
 static const YYINT yydefred[] = {                         0,
-   18,   10,    0,    0,    9,    0,    0,    0,    0,    0,
-    0,   19,    0,    1,    6,    0,    0,    0,    0,    0,
-   15,   11,    0,   16,   17,    6,   21,   22,   23,   24,
-    0,   13,
+   23,    0,    0,   13,    0,    0,    0,    0,   12,    0,
+   24,    0,    0,    9,    0,    0,    0,    0,    2,    0,
+    9,    0,    0,    0,    0,   20,   14,    0,   21,   22,
+    1,   26,   27,   28,   29,    0,   17,
 };
-static const YYINT yydgoto[] = {                          3,
-    4,    9,   10,    5,    6,   22,   23,   24,   25,
+static const YYINT yydgoto[] = {                          5,
+    6,    7,    8,    9,   10,   27,   28,   29,   30,
 };
-static const YYINT yysindex[] = {                      -257,
-    0,    0,    0, -260,    0, -250, -250, -260, -246, -260,
- -235,    0, -250,    0,    0, -250, -231, -229, -228, -227,
-    0,    0, -250,    0,    0,    0,    0,    0,    0,    0,
- -235,    0,
+static const YYINT yysindex[] = {                      -233,
+    0, -261, -217,    0,    0, -220, -217, -217,    0, -261,
+    0, -261, -217,    0, -233, -261, -221, -233,    0, -217,
+    0, -254, -250, -246, -241,    0,    0, -261,    0,    0,
+    0,    0,    0,    0,    0, -221,    0,
 };
 static const YYINT yyrindex[] = {                         0,
-    0,    0,    0,   15,    0,    9,    1,    2,   26,    0,
-    0,    0,    6,    0,    0,    7,    0,    0,    0,    0,
-    0,    0,   10,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,
+    0,    1,   10,    0,    0,    0,   26,    0,    0,    4,
+    0,    5,   35,    0,   44,    9,   17,   48,    0,   14,
+    0,    0,    0,    0,    0,    0,    0,   13,    0,    0,
+    0,    0,    0,    0,    0,   19,    0,
 };
-static const YYINT yygindex[] = {                        27,
-    0,   21,    5,    0,  -11,    4,    0,    0,    0,
+static const YYINT yygindex[] = {                       -15,
+   20,   43,    6,    0,  -11,   15,    0,    0,    0,
 };
-#define YYTABLESIZE 274
-static const YYINT yytable[] = {                         21,
-   20,    4,    7,    8,    1,    8,    5,    2,   12,   14,
-   11,   12,    7,   15,    3,    1,    7,   15,    2,   21,
-   26,   17,   18,   19,   20,    2,    1,   31,   13,   27,
-   16,   28,   29,   30,   32,   14,    0,    0,    0,    0,
+#define YYTABLESIZE 283
+static const YYINT yytable[] = {                         19,
+   25,    2,   31,   16,   11,   26,   32,   11,    8,    7,
+   33,   14,   19,    9,   34,   17,   15,   14,   18,   35,
+   20,   21,   12,   20,   26,    6,   15,   16,    1,    2,
+    3,    4,   18,   36,    5,   22,   23,   24,   25,   16,
+    1,    1,    2,    4,    4,    2,    3,    3,   13,    0,
+   37,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -251,19 +249,18 @@ static const YYINT yytable[] = {                         21,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,   20,   20,   20,
-   20,    0,   20,    4,   20,   20,    4,    8,    5,    0,
-    8,    5,   12,   14,
+    0,    0,    0,    0,    0,    0,    0,   25,   25,   25,
+   25,    0,   25,    0,   25,   25,   11,   16,   11,   11,
+    8,    7,    8,    8,    7,    9,   19,    0,    9,   15,
+   15,   18,   18,
 };
-static const YYINT yycheck[] = {                         11,
-    0,    0,  263,  264,  262,    0,    0,  265,    0,    0,
-    6,    7,  263,    9,    0,  262,  263,   13,  265,   31,
-   16,  257,  258,  259,  260,    0,  262,   23,    8,  261,
-   10,  261,  261,  261,   31,    9,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+static const YYINT yycheck[] = {                         15,
+    0,  263,   18,    0,    0,   17,  261,    2,    0,    0,
+  261,    6,    0,    0,  261,   10,    0,   12,    0,  261,
+   15,   16,    3,   18,   36,    0,    7,    8,  262,  263,
+  264,  265,   13,   28,    0,  257,  258,  259,  260,   20,
+  262,  262,  263,    0,  265,  263,  264,    0,    6,   -1,
+   36,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
@@ -284,10 +281,11 @@ static const YYINT yycheck[] = {                         11,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,  257,  258,  259,
-  260,   -1,  262,  262,  264,  265,  265,  262,  262,   -1,
-  265,  265,  264,  264,
+  260,   -1,  262,   -1,  264,  265,  262,  264,  264,  265,
+  262,  262,  264,  265,  265,  262,  264,   -1,  265,  263,
+  264,  263,  264,
 };
-#define YYFINAL 3
+#define YYFINAL 5
 #ifndef YYDEBUG
 #define YYDEBUG 1
 #endif
@@ -309,8 +307,11 @@ static const char *const yyname[] = {
 };
 static const char *const yyrule[] = {
 "$accept : text",
+"text : newLine line newLine text",
 "text : line newLine text",
+"text : newLine line newLine",
 "text : line newLine",
+"text : newLine line",
 "text : line",
 "newLine : NEWLINE",
 "newLine : divider newLine",
@@ -320,8 +321,10 @@ static const char *const yyrule[] = {
 "line : command",
 "line : LABEL",
 "command : id divider arguments",
+"command : id divider",
 "command : id",
 "arguments : arg divider arguments",
+"arguments : arg divider",
 "arguments : arg",
 "arg : id",
 "arg : ariphmetic",
@@ -370,11 +373,10 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 179 "test1.y"
+#line 186 "test1.y"
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 int toDecimalConvert(int base, char * num) {
-	
 	return 0;
 	/*TODO конвертер по разным основаниям в 10-чную систему*/
 }
@@ -384,9 +386,45 @@ int toBaseConvert(int base, int num) {
 	/*TODO конвертер по разным основаниям в 8-чную систему*/
 }
 
-int inArray(char * a[], char * arg) {
-	int length = sizeof(a)/sizeof(a[0]);
-	for (int i = 0; i < length; i++)
+//Инициализация переменной под новую операцию
+void operationAnalyze(char * name) {
+	//Проверяем, читаем уже команду или пока нет
+	if (readingCommandLine == 0) 
+	{
+		int t = isCommandName(name);
+		if (t != -1)
+		{
+			opDesc.expectedArgs = t;
+			opDesc.args = 0;
+			readingCommandLine = 1;
+		}
+		else
+		{
+			printf("<ERROR> wrong command recieved\n");
+		}	
+	}
+	else if (isRegisterName(name) == 1)
+	{
+		switch (opDesc.args) {
+			case 1:
+				opDesc.arg1 = argConvert(name);
+				break;
+			case 2:
+				opDesc.arg2 = argConvert(name);
+				break;
+		}
+		opDesc.args++;
+		//Проверка на ожидаемое количество аргументов
+		if (opDesc.args > opDesc.expectedArgs) 
+		{
+			printf("<ERROR> expected %d argument(s)\n", opDesc.expectedArgs);
+		}
+	}
+}
+
+int inArray(char * a[], char * arg, int l) {
+	//int l = sizeof(a)/sizeof(a[0]);
+	for (int i = 0; i < l; i++)
 	{
 		if (strcmp(arg, a[i]) == 0) 
 		{
@@ -406,7 +444,8 @@ int isNArgCommand(char * arg, int n) {
 					 "RP", "RM", "EI", "DI", "NOP", "HLT", 
 					 "DAA", "CMA", "RLC", "RRC", "RAL", 
 					 "RAR", "STC", "CMC" };
-				return inArray(a, arg);
+				int l = sizeof(a)/sizeof(a[0]);
+				return inArray(a, arg, l);
 			}
 		case 1:
 			{
@@ -419,19 +458,21 @@ int isNArgCommand(char * arg, int n) {
 					 "DCR", "DCX", "DAD", "ANA", 
 					 "ANI", "XRA", "XRI", "ORA", 
 					 "ORI"};
-				return inArray(a, arg);
+				int l = sizeof(a)/sizeof(a[0]);
+				return inArray(a, arg, l);
 			}
 		case 2:
 			{
 				char * a[] =
-					{"MOV", "MVI", "LXI", "LXISP", 
-					 "LDA", "STA", "LHLD", "SHLD", 
+					{"MOV", "MVI", "LXI", "LDA", 
+					 "STA", "LHLD", "SHLD", 
 					 "JMP", "CALL", "JNZ", "JZ", 
 					 "JNC", "JC", "JPO", "JPE", 
 					 "JP", "JM", "CNZ", "CZ", 
 					 "CNC", "CC", "CPO", "CPE", 
 					 "CP", "CM"};
-				return inArray(a, arg);
+				int l = sizeof(a)/sizeof(a[0]);
+				return inArray(a, arg, l);
 			}
 		default:
 			printf("<ERROR> wrong argument amount\n");
@@ -439,17 +480,19 @@ int isNArgCommand(char * arg, int n) {
 	}
 }
 
-//После прогонки тестов можно убрать отладочную ошибку
-//и переписать return в цикл for
 //Встречена команда?
 int isCommandName(char * arg) {
-	int result = 0;
+	//Количество найденных совпадений (0 или 1 при корректной работе)
+	int found = 0;
+	//Количество аргументов (-1 - команда не найдена)
+	int result = -1;
 	//Цикл по возможному количеству арг-в
 	for (int i = 0; i <= 2; i++)
 	{
-		result+=isNArgCommand(arg, i);
+		found+=isNArgCommand(arg, i);
+		if (found > 0) result = i;
 	}
-	if (result > 1) 
+	if (found > 1) 
 	{
 		printf ("<ERROR> command duplicates in command list\n");
 	}
@@ -516,7 +559,7 @@ int argConvert(char * arg) {
 	else 
 	{
 		printf("<ERROR>: unexpected argument\n");
-		return 0;
+		return -1;
 	}
 }
 
@@ -526,7 +569,7 @@ int argConvert(char * arg) {
 LDAX|STAX|IN|OUT|PUSH|POP|PCHL|RST|ADD|ADI|ADC|ACI|SUB|SUI|SBB|SBI|CMP|CPI|INR|INX|DCR|DCX|DAD|ANA|ANI|XRA|XRI|ORA|ORI;
 
 MOV|MVI|LXI|LXISP|LDA|STA|LHLD|SHLD|JMP|CALL|JNZ|JZ|JNC|JC|JPO|JPE|JP|JM|CNZ|CZ|CNC|CC|CPO|CPE|CP|CM;*/
-#line 530 "y.tab.c"
+#line 573 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -729,60 +772,70 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 144 "test1.y"
+#line 140 "test1.y"
 	{}
 break;
 case 2:
-#line 145 "test1.y"
+#line 141 "test1.y"
 	{}
 break;
 case 3:
-#line 146 "test1.y"
+#line 142 "test1.y"
 	{}
 break;
 case 4:
-#line 148 "test1.y"
+#line 143 "test1.y"
 	{}
 break;
 case 5:
-#line 149 "test1.y"
+#line 144 "test1.y"
 	{}
 break;
 case 6:
-#line 150 "test1.y"
+#line 145 "test1.y"
 	{}
 break;
 case 7:
-#line 151 "test1.y"
+#line 147 "test1.y"
 	{}
 break;
 case 8:
-#line 152 "test1.y"
+#line 148 "test1.y"
 	{}
 break;
 case 9:
-#line 154 "test1.y"
-	{ printf("line parsed\n");}
+#line 149 "test1.y"
+	{}
 break;
 case 10:
-#line 155 "test1.y"
-	{ printf("line parsed\n");}
+#line 150 "test1.y"
+	{}
 break;
 case 11:
-#line 157 "test1.y"
+#line 151 "test1.y"
 	{}
 break;
 case 12:
-#line 158 "test1.y"
-	{}
+#line 153 "test1.y"
+	{ 
+										printf("line parsed\n");
+									 	readingCommandLine = 0;
+									}
 break;
 case 13:
-#line 160 "test1.y"
+#line 157 "test1.y"
+	{ 
+										printf("line parsed\n");
+								 		readingCommandLine = 0;
+									}
+break;
+case 14:
+#line 162 "test1.y"
 	{}
 break;
 case 15:
 #line 163 "test1.y"
-	{ if (isRegisterName(yystack.l_mark[0].str) == 1) printf("found\n");}
+	{}
 break;
 case 16:
 #line 164 "test1.y"
@@ -790,37 +843,53 @@ case 16:
 break;
 case 17:
 #line 166 "test1.y"
-	{/*Потом отсюда расширим арифметику*/}
+	{}
 break;
 case 18:
-#line 168 "test1.y"
-	{ printf("%s\n", yystack.l_mark[0].str); }
-break;
-case 19:
-#line 170 "test1.y"
+#line 167 "test1.y"
 	{}
 break;
 case 20:
+#line 170 "test1.y"
+	{ if (isRegisterName(yystack.l_mark[0].str) == 1) printf("found\n");}
+break;
+case 21:
 #line 171 "test1.y"
 	{}
 break;
-case 21:
-#line 173 "test1.y"
-	{ yyval.val = toDecimalConvert(10, yystack.l_mark[0].str); }
-break;
 case 22:
-#line 174 "test1.y"
-	{ yyval.val = toDecimalConvert(16, yystack.l_mark[0].str); }
+#line 173 "test1.y"
+	{/*Потом отсюда расширим арифметику*/}
 break;
 case 23:
 #line 175 "test1.y"
-	{ yyval.val = toDecimalConvert(8, yystack.l_mark[0].str); }
+	{ printf("%s\n", yystack.l_mark[0].str); operationAnalyze(yystack.l_mark[0].str); }
 break;
 case 24:
-#line 176 "test1.y"
+#line 177 "test1.y"
+	{}
+break;
+case 25:
+#line 178 "test1.y"
+	{}
+break;
+case 26:
+#line 180 "test1.y"
+	{ yyval.val = toDecimalConvert(10, yystack.l_mark[0].str); }
+break;
+case 27:
+#line 181 "test1.y"
+	{ yyval.val = toDecimalConvert(16, yystack.l_mark[0].str); }
+break;
+case 28:
+#line 182 "test1.y"
+	{ yyval.val = toDecimalConvert(8, yystack.l_mark[0].str); }
+break;
+case 29:
+#line 183 "test1.y"
 	{ yyval.val = toDecimalConvert(2, yystack.l_mark[0].str); }
 break;
-#line 824 "y.tab.c"
+#line 893 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
