@@ -185,14 +185,14 @@ int toDecimalConvert(int base, char * num) {
 	/*TODO конвертер по разным основаниям в 10-чную систему*/
 }
 
-int[] toBinaryConvert(int num) {
+/*int[] toBinaryConvert(int num) {
 	char result[MAX_BINARY_LENGTH];
 	for (int i = MAX_BINARY_LENGTH-1; i >= 0; i--) {
 		result[i] = num%2;
 		num = num/2;
 	}
 	return result;
-}
+}*/
 
 void getCommand() {
 	readingCommandLine = 0;

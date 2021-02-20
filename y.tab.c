@@ -110,13 +110,6 @@ enum OPCODE
 	CMC,
 };	
 
-/*Типы аргументов*/
-enum ARGTYPE
-{
-	NAME,
-	VALUE
-};
-
 /*Описание команды:*/
 typedef struct {
 	int expectedArgs;
@@ -131,9 +124,8 @@ operationDescription opDesc;
 	
 /*Флаги*/
 int readingCommandLine = 0;
-char * globalString;
 	
-#line 122 "test1.y"
+#line 114 "test1.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -145,7 +137,7 @@ typedef union {
 	char * str;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 149 "y.tab.c"
+#line 141 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -374,7 +366,7 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 189 "test1.y"
+#line 181 "test1.y"
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 int toDecimalConvert(int base, char * num) {
@@ -382,21 +374,18 @@ int toDecimalConvert(int base, char * num) {
 	/*TODO конвертер по разным основаниям в 10-чную систему*/
 }
 
-void toBinaryConvert(int num) {
+int[] toBinaryConvert(int num) {
 	char result[MAX_BINARY_LENGTH];
 	for (int i = MAX_BINARY_LENGTH-1; i >= 0; i--) {
 		result[i] = num%2;
 		num = num/2;
 	}
-	globalString = &result;
+	return result;
 }
 
 void getCommand() {
 	readingCommandLine = 0;
-	printf("\x1b[32;1mparsed: %s %d %d\n\x1b[0m", opDesc.opName, opDesc.arg1, opDesc.arg2);
-	toBinaryConvert(opDesc.arg1);
-	printf("\x1b[32;1mparsed: %s %s %s\n\x1b[0m", opDesc.opName, globalString, globalString);
-	
+	printf("\x1b[32;1mparsed: %s %d %d\n\x1b[0m", opDesc.opName, opDesc.arg1, opDesc.arg2);	
 }
 
 void numArgAnalyze(int arg) {
@@ -635,7 +624,7 @@ int argConvert(char * arg) {
 LDAX|STAX|IN|OUT|PUSH|POP|PCHL|RST|ADD|ADI|ADC|ACI|SUB|SUI|SBB|SBI|CMP|CPI|INR|INX|DCR|DCX|DAD|ANA|ANI|XRA|XRI|ORA|ORI;
 
 MOV|MVI|LXI|LXISP|LDA|STA|LHLD|SHLD|JMP|CALL|JNZ|JZ|JNC|JC|JPO|JPE|JP|JM|CNZ|CZ|CNC|CC|CPO|CPE|CP|CM;*/
-#line 639 "y.tab.c"
+#line 628 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -838,51 +827,51 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 141 "test1.y"
+#line 133 "test1.y"
 	{}
 break;
 case 2:
-#line 142 "test1.y"
+#line 134 "test1.y"
 	{}
 break;
 case 3:
-#line 143 "test1.y"
+#line 135 "test1.y"
 	{}
 break;
 case 4:
-#line 144 "test1.y"
+#line 136 "test1.y"
 	{}
 break;
 case 5:
-#line 145 "test1.y"
+#line 137 "test1.y"
 	{}
 break;
 case 6:
-#line 146 "test1.y"
+#line 138 "test1.y"
 	{}
 break;
 case 7:
-#line 148 "test1.y"
+#line 140 "test1.y"
 	{}
 break;
 case 8:
-#line 149 "test1.y"
+#line 141 "test1.y"
 	{}
 break;
 case 9:
-#line 150 "test1.y"
+#line 142 "test1.y"
 	{}
 break;
 case 10:
-#line 151 "test1.y"
+#line 143 "test1.y"
 	{}
 break;
 case 11:
-#line 152 "test1.y"
+#line 144 "test1.y"
 	{}
 break;
 case 12:
-#line 154 "test1.y"
+#line 146 "test1.y"
 	{ 
 										/*printf("line parsed\n");*/
 										getCommand();
@@ -890,7 +879,7 @@ case 12:
 									}
 break;
 case 13:
-#line 159 "test1.y"
+#line 151 "test1.y"
 	{ 
 										/*printf("line parsed\n");*/
 										getCommand();
@@ -898,66 +887,66 @@ case 13:
 									}
 break;
 case 14:
-#line 165 "test1.y"
+#line 157 "test1.y"
 	{}
 break;
 case 15:
-#line 166 "test1.y"
+#line 158 "test1.y"
 	{}
 break;
 case 16:
-#line 167 "test1.y"
+#line 159 "test1.y"
 	{}
 break;
 case 17:
-#line 169 "test1.y"
+#line 161 "test1.y"
 	{}
 break;
 case 18:
-#line 170 "test1.y"
+#line 162 "test1.y"
 	{}
 break;
 case 20:
-#line 173 "test1.y"
+#line 165 "test1.y"
 	{}
 break;
 case 21:
-#line 174 "test1.y"
+#line 166 "test1.y"
 	{ numArgAnalyze(yystack.l_mark[0].val); }
 break;
 case 22:
-#line 176 "test1.y"
+#line 168 "test1.y"
 	{/*Потом отсюда расширим арифметику*/}
 break;
 case 23:
-#line 178 "test1.y"
+#line 170 "test1.y"
 	{ printf("%s\n", yystack.l_mark[0].str); operationAnalyze(yystack.l_mark[0].str); }
 break;
 case 24:
-#line 180 "test1.y"
+#line 172 "test1.y"
 	{}
 break;
 case 25:
-#line 181 "test1.y"
+#line 173 "test1.y"
 	{}
 break;
 case 26:
-#line 183 "test1.y"
+#line 175 "test1.y"
 	{ yyval.val = toDecimalConvert(10, yystack.l_mark[0].str); }
 break;
 case 27:
-#line 184 "test1.y"
+#line 176 "test1.y"
 	{ yyval.val = toDecimalConvert(16, yystack.l_mark[0].str); }
 break;
 case 28:
-#line 185 "test1.y"
+#line 177 "test1.y"
 	{ yyval.val = toDecimalConvert(8, yystack.l_mark[0].str); }
 break;
 case 29:
-#line 186 "test1.y"
+#line 178 "test1.y"
 	{ yyval.val = toDecimalConvert(2, yystack.l_mark[0].str); }
 break;
-#line 961 "y.tab.c"
+#line 950 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
