@@ -89,9 +89,17 @@ enum OPCODE
 	RAL,
 	RAR,
 	STC,
-	CMC,
+	CMC
 };	
 
+enum OUTPUTMODE
+{
+	BINARY,
+	OCTAL,
+	NUMERIC,
+	CHECK
+} globalMode;
+	
 //Описание команды:
 typedef struct {
 	int expectedArgs;
@@ -145,12 +153,12 @@ newLine	: NEWLINE					{}
 
 line: command 						{ 
 										//printf("line parsed\n");
-										getCommand();
+										getCommand(globalMode);
 									 	readingCommandLine = 0;
 									}
 	| LABEL			 			 	{ 
 										//printf("line parsed\n");
-										getCommand();
+										getCommand(globalMode);
 								 		readingCommandLine = 0;
 									}
 
@@ -194,9 +202,10 @@ int toDecimalConvert(int base, char * num) {
 	return result;
 }*/
 
-void getCommand() {
+void getCommand(enum OUTPUTMODE mode) {
 	readingCommandLine = 0;
-	printf("\x1b[32;1mparsed: %s %d %d\n\x1b[0m", opDesc.opName, opDesc.arg1, opDesc.arg2);	
+	printf("\x1b[32;1mparsed: %s %d %d\n\x1b[0m", opDesc.opName, opDesc.arg1, opDesc.arg2);
+	
 }
 
 void numArgAnalyze(int arg) {
