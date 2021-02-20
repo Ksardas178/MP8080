@@ -5,7 +5,7 @@
 #include "my.h"
 	
 //Global variables&flags
-extern lineCounter;
+extern int lineCounter;
 	
 %}
 

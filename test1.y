@@ -186,21 +186,8 @@ int toBaseConvert(int base, int num) {
 	/*TODO конвертер по разным основаниям в 8-чную систему*/
 }
 
-/*TODO сделать три процедуры по количеству аргументов
-одну процедуру выделить как общую (в ней вызывать остальные),
-подумать над кнцепцией (нормальная ли вообще?)*/
-//Встречена команда?
-int isCommandName(char * arg) {
-	
-}
 
-int isZeroArgCommand(char * arg) {
-	const char * a[] =
-		{"XCHG", "XTHL", "SPHL", "PCHL", "RET", 
-		 "RNZ", "RZ", "RNC", "RC", "RPO", "RPE", 
-		 "RP", "RM", "EI", "DI", "NOP", "HLT", 
-		 "DAA", "CMA", "RLC", "RRC", "RAL", 
-		 "RAR", "STC", "CMC" };
+int inArray(char * a[], char * arg) {
 	int length = sizeof(a)/sizeof(a[0]);
 	for (int i = 0; i < length; i++)
 	{
@@ -212,6 +199,67 @@ int isZeroArgCommand(char * arg) {
 	return 0;
 }
 
+int isNArgCommand(char * arg, int n) {
+	switch (n) {
+		case 0:
+			{
+				char * a[] =
+					{"XCHG", "XTHL", "SPHL", "PCHL", "RET", 
+					 "RNZ", "RZ", "RNC", "RC", "RPO", "RPE", 
+					 "RP", "RM", "EI", "DI", "NOP", "HLT", 
+					 "DAA", "CMA", "RLC", "RRC", "RAL", 
+					 "RAR", "STC", "CMC" };
+				return inArray(a, arg);
+			}
+		case 1:
+			{
+				char * a[] =
+					{"LDAX", "STAX", "IN", "OUT", 
+					 "PUSH", "POP", "PCHL", "RST", 
+					 "ADD", "ADI", "ADC", "ACI", 
+					 "SUB", "SUI", "SBB", "SBI", 
+					 "CMP", "CPI", "INR", "INX", 
+					 "DCR", "DCX", "DAD", "ANA", 
+					 "ANI", "XRA", "XRI", "ORA", 
+					 "ORI"};
+				return inArray(a, arg);
+			}
+		case 2:
+			{
+				char * a[] =
+					{"MOV", "MVI", "LXI", "LXISP", 
+					 "LDA", "STA", "LHLD", "SHLD", 
+					 "JMP", "CALL", "JNZ", "JZ", 
+					 "JNC", "JC", "JPO", "JPE", 
+					 "JP", "JM", "CNZ", "CZ", 
+					 "CNC", "CC", "CPO", "CPE", 
+					 "CP", "CM"};
+				return inArray(a, arg);
+			}
+		default:
+			printf("<ERROR> wrong argument amount\n");
+			return 0;
+	}
+}
+
+//После прогонки тестов можно убрать отладочную ошибку
+//и переписать return в цикл for
+//Встречена команда?
+int isCommandName(char * arg) {
+	int result = 0;
+	//Цикл по возможному количеству арг-в
+	for (int i = 0; i <= 2; i++)
+	{
+		result+=isNArgCommand(arg, i);
+	}
+	if (result > 1) 
+	{
+		printf ("<ERROR> command duplicates in command list\n");
+	}
+	return result;
+}
+
+/*
 int isOneArgCommand(char * arg) {
 	const char * a[] =
 		{"LDAX", "STAX", "IN", "OUT", 
@@ -252,6 +300,7 @@ int isTwoArgCommand(char * arg) {
 	}
 	return 0;
 }
+*/
 
 //Встречено условное имя регистра/регистровой пары?
 int isRegisterName(char * arg) {

@@ -108,8 +108,8 @@ enum OPCODE
 	RAR,
 	STC,
 	CMC,
-};
-	
+};	
+
 /*Типы аргументов*/
 enum ARGTYPE
 {
@@ -134,7 +134,9 @@ typedef struct {
 	variousInfo * arg;/*Число либо строка в зависимости от типа*/
 } argumentInfo;
 
-#line 123 "test1.y"
+
+	
+#line 125 "test1.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -146,7 +148,7 @@ typedef union {
 	char * str;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 150 "y.tab.c"
+#line 152 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -179,75 +181,154 @@ typedef union {
 
 extern int YYPARSE_DECL();
 
-#define NUM 257
-#define ID 258
-#define DIVIDER 259
-#define LABEL 260
+#define DECIMAL 257
+#define HEXADECIMAL 258
+#define OCTAL 259
+#define BINARY 260
+#define ID 261
+#define DIVIDER 262
+#define NEWLINE 263
+#define LABEL 264
 #define YYERRCODE 256
 typedef short YYINT;
 static const YYINT yylhs[] = {                           -1,
-    0,    0,    1,    1,    2,    2,    3,    3,    3,
+    0,    0,    0,    2,    2,    2,    2,    2,    1,    1,
+    4,    4,    6,    6,    7,    7,    8,    5,    3,    3,
+    9,    9,    9,    9,
 };
 static const YYINT yylen[] = {                            2,
-    3,    1,    1,    1,    3,    1,    3,    1,    1,
+    3,    2,    1,    1,    2,    2,    3,    2,    1,    1,
+    3,    1,    3,    1,    1,    1,    1,    1,    2,    1,
+    1,    1,    1,    1,
 };
 static const YYINT yydefred[] = {                         0,
-    0,    4,    0,    0,    3,    0,    0,    9,    8,    0,
-    1,    0,    0,
+   18,   10,    0,    0,    9,    0,    0,    0,    0,    0,
+    0,   19,    0,    1,    6,    0,   21,   22,   23,   24,
+   15,   11,    0,   16,   17,    6,    0,   13,
 };
 static const YYINT yydgoto[] = {                          3,
-    4,    5,   10,
+    4,    9,   10,    5,    6,   22,   23,   24,   25,
 };
-static const YYINT yysindex[] = {                      -254,
- -259,    0,    0,   -5,    0, -250, -254,    0,    0, -249,
-    0, -250, -249,
+static const YYINT yysindex[] = {                      -256,
+    0,    0,    0, -259,    0, -249, -249, -259, -232, -259,
+ -235,    0, -249,    0,    0, -249,    0,    0,    0,    0,
+    0,    0, -249,    0,    0,    0, -235,    0,
 };
 static const YYINT yyrindex[] = {                         0,
-    1,    0,    0,    9,    0,    0,    0,    0,    0,    2,
-    0,    0,    3,
+    0,    0,    0,   15,    0,    9,    1,    2,   17,    0,
+    0,    0,    6,    0,    0,    7,    0,    0,    0,    0,
+    0,    0,   10,    0,    0,    0,    0,    0,
 };
-static const YYINT yygindex[] = {                         7,
-    0,    0,    4,
+static const YYINT yygindex[] = {                        11,
+    0,   23,    5,    0,  -11,   -8,    0,    0,    0,
 };
-#define YYTABLESIZE 16
-static const YYINT yytable[] = {                          6,
-    6,    5,    7,    1,    7,    2,    8,    9,    2,   12,
-    6,    5,    7,   11,    0,   13,
+#define YYTABLESIZE 273
+static const YYINT yytable[] = {                         21,
+   20,    4,    7,    8,    1,    8,    5,    2,   12,   14,
+   11,   12,    7,   15,    3,   21,    2,   15,   28,   14,
+   26,   17,   18,   19,   20,    1,    0,   27,    1,    7,
+   13,    2,   16,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,   20,   20,   20,
+   20,   20,    4,   20,   20,    4,    8,    5,    0,    8,
+    5,   12,   14,
 };
-static const YYINT yycheck[] = {                        259,
-    0,    0,    0,  258,   10,  260,  257,  258,    0,  259,
-   10,   10,   10,    7,   -1,   12,
+static const YYINT yycheck[] = {                         11,
+    0,    0,  262,  263,  261,    0,    0,  264,    0,    0,
+    6,    7,  262,    9,    0,   27,    0,   13,   27,    9,
+   16,  257,  258,  259,  260,  261,   -1,   23,  261,  262,
+    8,  264,   10,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,  257,  258,  259,
+  260,  261,  261,  263,  264,  264,  261,  261,   -1,  264,
+  264,  263,  263,
 };
 #define YYFINAL 3
 #ifndef YYDEBUG
 #define YYDEBUG 1
 #endif
-#define YYMAXTOKEN 260
-#define YYUNDFTOKEN 266
+#define YYMAXTOKEN 264
+#define YYUNDFTOKEN 276
 #define YYTRANSLATE(a) ((a) > YYMAXTOKEN ? YYUNDFTOKEN : (a))
 #if YYDEBUG
 static const char *const yyname[] = {
 
-"end-of-file",0,0,0,0,0,0,0,0,0,"'\\n'",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+"end-of-file",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"NUM","ID","DIVIDER",
-"LABEL",0,0,0,0,0,"illegal-symbol",
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"DECIMAL","HEXADECIMAL","OCTAL",
+"BINARY","ID","DIVIDER","NEWLINE","LABEL",0,0,0,0,0,0,0,0,0,0,0,
+"illegal-symbol",
 };
 static const char *const yyrule[] = {
 "$accept : text",
-"text : line '\\n' text",
+"text : line newLine text",
+"text : line newLine",
 "text : line",
+"newLine : NEWLINE",
+"newLine : divider newLine",
+"newLine : newLine divider",
+"newLine : divider newLine divider",
+"newLine : NEWLINE newLine",
 "line : command",
 "line : LABEL",
-"command : ID DIVIDER arguments",
-"command : ID",
-"arguments : arguments DIVIDER arguments",
-"arguments : ID",
-"arguments : NUM",
+"command : id divider arguments",
+"command : id",
+"arguments : arg divider arguments",
+"arguments : arg",
+"arg : id",
+"arg : ariphmetic",
+"ariphmetic : num",
+"id : ID",
+"divider : DIVIDER divider",
+"divider : DIVIDER",
+"num : DECIMAL",
+"num : HEXADECIMAL",
+"num : OCTAL",
+"num : BINARY",
 
 };
 #endif
@@ -285,10 +366,197 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 151 "test1.y"
+#line 178 "test1.y"
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-	
+int toDecimalConvert(int base, char * num) {
+	/*TODO конвертер по разным основаниям в 10-чную систему*/
+}
+
+int toBaseConvert(int base, int num) {
+	/*Надо ли это нам? Как будем хранить не десятичные числа? Мб вообще в строках? А работать с 10-м представлением?*/
+	/*TODO конвертер по разным основаниям в 8-чную систему*/
+}
+
+
+int inArray(char * a[], char * arg) {
+	int length = sizeof(a)/sizeof(a[0]);
+	for (int i = 0; i < length; i++)
+	{
+		if (strcmp(arg, a[i]) == 0) 
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int isNArgCommand(char * arg, int n) {
+	switch (n) {
+		case 0:
+			{
+				char * a[] =
+					{"XCHG", "XTHL", "SPHL", "PCHL", "RET", 
+					 "RNZ", "RZ", "RNC", "RC", "RPO", "RPE", 
+					 "RP", "RM", "EI", "DI", "NOP", "HLT", 
+					 "DAA", "CMA", "RLC", "RRC", "RAL", 
+					 "RAR", "STC", "CMC" };
+				return inArray(a, arg);
+			}
+		case 1:
+			{
+				char * a[] =
+					{"LDAX", "STAX", "IN", "OUT", 
+					 "PUSH", "POP", "PCHL", "RST", 
+					 "ADD", "ADI", "ADC", "ACI", 
+					 "SUB", "SUI", "SBB", "SBI", 
+					 "CMP", "CPI", "INR", "INX", 
+					 "DCR", "DCX", "DAD", "ANA", 
+					 "ANI", "XRA", "XRI", "ORA", 
+					 "ORI"};
+				return inArray(a, arg);
+			}
+		case 2:
+			{
+				char * a[] =
+					{"MOV", "MVI", "LXI", "LXISP", 
+					 "LDA", "STA", "LHLD", "SHLD", 
+					 "JMP", "CALL", "JNZ", "JZ", 
+					 "JNC", "JC", "JPO", "JPE", 
+					 "JP", "JM", "CNZ", "CZ", 
+					 "CNC", "CC", "CPO", "CPE", 
+					 "CP", "CM"};
+				return inArray(a, arg);
+			}
+		default:
+			printf("<ERROR> wrong argument amount\n");
+			return 0;
+	}
+}
+
+//После прогонки тестов можно убрать отладочную ошибку
+//и переписать return в цикл for
+//Встречена команда?
+int isCommandName(char * arg) {
+	int result = 0;
+	//Цикл по возможному количеству арг-в
+	for (int i = 0; i <= 2; i++)
+	{
+		result+=isNArgCommand(arg, i);
+	}
+	if (result > 1) 
+	{
+		printf ("<ERROR> command duplicates in command list\n");
+	}
+	return result;
+}
+
+/*
+int isOneArgCommand(char * arg) {
+	const char * a[] =
+		{"LDAX", "STAX", "IN", "OUT", 
+		 "PUSH", "POP", "PCHL", "RST", 
+		 "ADD", "ADI", "ADC", "ACI", 
+		 "SUB", "SUI", "SBB", "SBI", 
+		 "CMP", "CPI", "INR", "INX", 
+		 "DCR", "DCX", "DAD", "ANA", 
+		 "ANI", "XRA", "XRI", "ORA", 
+		 "ORI"};
+	int length = sizeof(a)/sizeof(a[0]);
+	for (int i = 0; i < length; i++)
+	{
+		if (strcmp(arg, a[i]) == 0) 
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int isTwoArgCommand(char * arg) {
+	const char * a[] =
+		{"MOV", "MVI", "LXI", "LXISP", 
+		 "LDA", "STA", "LHLD", "SHLD", 
+		 "JMP", "CALL", "JNZ", "JZ", 
+		 "JNC", "JC", "JPO", "JPE", 
+		 "JP", "JM", "CNZ", "CZ", 
+		 "CNC", "CC", "CPO", "CPE", 
+		 "CP", "CM"};
+	int length = sizeof(a)/sizeof(a[0]);
+	for (int i = 0; i < length; i++)
+	{
+		if (strcmp(arg, a[i]) == 0) 
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+*/
+
+//Встречено условное имя регистра/регистровой пары?
+int isRegisterName(char * arg) {
+	const char * a[] = 
+		{"B", "C", "D", "E", "H", "L", "M", "A", "PSW", "SP"};
+	int length = sizeof(a)/sizeof(a[0]);
+	for (int i = 0; i < length; i++)
+	{
+		if (strcmp(arg, a[i]) == 0) 
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+//Конвертация символьного значения регистра/регистровой пары в числовое
+int argConvert(char * arg) {
+	if (strcmp(arg, "B") == 0)
+	{
+		return 0;
+	}
+	else if (strcmp(arg, "C") == 0) 
+	{
+		return 1;
+	}
+	else if (strcmp(arg, "D") == 0) 
+	{
+		return 2;
+	}
+	else if (strcmp(arg, "E") == 0) 
+	{
+		return 3;
+	}
+	else if (strcmp(arg, "H") == 0) 
+	{
+		return 4;
+	}
+	else if (strcmp(arg, "L") == 0) 
+	{
+		return 5;
+	}
+	else if (strcmp(arg, "M") == 0) 
+	{
+		return 6;
+	}
+	else if (strcmp(arg, "A") == 0) 
+	{
+		return 7;
+	}
+	else if (strcmp(arg, "SP") == 0) 
+	{
+		return 6;
+	}
+	else if (strcmp(arg, "PSW") == 0) 
+	{
+		return 6;
+	}
+	else 
+	{
+		printf("<ERROR>: unexpected argument\n");
+		return 0;
+	}
+}
 
 /*Full command list*/
 /*XCHG|XTHL|SPHL|PCHL|RET|RNZ|RZ|RNC|RC|RPO|RPE|RP|RM|EI|DI|NOP|HLT|DAA|CMA|RLC|RRC|RAL|RAR|STC|CMC;
@@ -296,7 +564,7 @@ static YYSTACKDATA yystack;
 LDAX|STAX|IN|OUT|PUSH|POP|PCHL|RST|ADD|ADI|ADC|ACI|SUB|SUI|SBB|SBI|CMP|CPI|INR|INX|DCR|DCX|DAD|ANA|ANI|XRA|XRI|ORA|ORI;
 
 MOV|MVI|LXI|LXISP|LDA|STA|LHLD|SHLD|JMP|CALL|JNZ|JZ|JNC|JC|JPO|JPE|JP|JM|CNZ|CZ|CNC|CC|CPO|CPE|CP|CM;*/
-#line 300 "y.tab.c"
+#line 568 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -499,42 +767,98 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 137 "test1.y"
-	{}
-break;
-case 2:
-#line 138 "test1.y"
-	{}
-break;
-case 3:
-#line 140 "test1.y"
-	{}
-break;
-case 4:
-#line 141 "test1.y"
-	{}
-break;
-case 5:
 #line 143 "test1.y"
 	{}
 break;
-case 6:
+case 2:
 #line 144 "test1.y"
 	{}
 break;
-case 7:
-#line 146 "test1.y"
+case 3:
+#line 145 "test1.y"
 	{}
 break;
-case 8:
+case 4:
 #line 147 "test1.y"
 	{}
 break;
-case 9:
+case 5:
 #line 148 "test1.y"
 	{}
 break;
-#line 538 "y.tab.c"
+case 6:
+#line 149 "test1.y"
+	{}
+break;
+case 7:
+#line 150 "test1.y"
+	{}
+break;
+case 8:
+#line 151 "test1.y"
+	{}
+break;
+case 9:
+#line 153 "test1.y"
+	{ printf("line parsed\n");}
+break;
+case 10:
+#line 154 "test1.y"
+	{ printf("line parsed\n");}
+break;
+case 11:
+#line 156 "test1.y"
+	{}
+break;
+case 12:
+#line 157 "test1.y"
+	{}
+break;
+case 13:
+#line 159 "test1.y"
+	{}
+break;
+case 15:
+#line 162 "test1.y"
+	{ if (isRegisterName(yystack.l_mark[0].str) == 1) printf("found\n");}
+break;
+case 16:
+#line 163 "test1.y"
+	{}
+break;
+case 17:
+#line 165 "test1.y"
+	{/*Потом отсюда расширим арифметику*/}
+break;
+case 18:
+#line 167 "test1.y"
+	{ printf("%s\n", yystack.l_mark[0].str); }
+break;
+case 19:
+#line 169 "test1.y"
+	{}
+break;
+case 20:
+#line 170 "test1.y"
+	{}
+break;
+case 21:
+#line 172 "test1.y"
+	{/*Возвращает 10-чное представление*/}
+break;
+case 22:
+#line 173 "test1.y"
+	{/*Возвращает 10-чное представление*/}
+break;
+case 23:
+#line 174 "test1.y"
+	{/*Возвращает 10-чное представление*/}
+break;
+case 24:
+#line 175 "test1.y"
+	{/*Возвращает 10-чное представление*/}
+break;
+#line 862 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
