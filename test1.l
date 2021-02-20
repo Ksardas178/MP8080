@@ -33,9 +33,9 @@ d*[0-9]+   				{
 							return DECIMAL;			
 						}
 [ \t]+					{ return DIVIDER; }
-\n						{ 
-							lineCounter++;
-							return DIVIDER;
+\n+						{ 
+							lineCounter+=yyleng;
+							return NEWLINE;
 						}
 (.)	    				return yytext[0];
 %%

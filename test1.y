@@ -133,18 +133,25 @@ typedef struct {
 %token	<str>BINARY
 %token	<str>ID
 %token	DIVIDER
+%token	NEWLINE
 %token	<str>LABEL
 
 %start text													
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-text: line divider text	{}
-	| line divider		{}
+text: line newLine text	{}
+	| line newLine		{}
 	| line				{}
 
-line: command 						{}
-	| LABEL			 			 	{}
+newLine	: NEWLINE					{}
+		| divider NEWLINE 			{}
+		| NEWLINE divider 			{}
+		| divider NEWLINE divider	{}
+		| NEWLINE newLine			{}
+
+line: command 						{ printf("line parsed\n");}
+	| LABEL			 			 	{ printf("line parsed\n");}
 
 command	: 	id divider arguments	{}
 		|	id						{}
@@ -152,18 +159,20 @@ command	: 	id divider arguments	{}
 arguments	: arg divider arguments {}
 			| arg
 
-arg	: id	{ if (isRegisterName($<str>1) == 1) printf("found\n");}
-	| num	{}
+arg	: id			{ if (isRegisterName($<str>1) == 1) printf("found\n");}
+	| ariphmetic	{}
+
+ariphmetic	: num	{/*Потом отсюда расширим арифметику*/}
 
 id	: ID	{ printf("%s\n", $1); }
 
 divider	: DIVIDER divider 	{}
 		| DIVIDER			{}
 
-num	: DECIMAL		{}
-	| HEXADECIMAL	{}
-	| OCTAL			{}
-	| BINARY		{}
+num	: DECIMAL		{/*Возвращает 10-чное представление*/}
+	| HEXADECIMAL	{/*Возвращает 10-чное представление*/}
+	| OCTAL			{/*Возвращает 10-чное представление*/}
+	| BINARY		{/*Возвращает 10-чное представление*/}
 
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
