@@ -1,8 +1,0 @@
-yydebug: state 0, reading 258 (ID)
-yydebug: state 0, shifting to state 2
-yydebug: state 2, reading 259 (DIVIDER)
-yydebug: state 2, shifting to state 8
-yydebug: state 8, reading 258 (ID)
-yydebug: error recovery discarding state 8
-yydebug: error recovery discarding state 2
-yydebug: error recovery discarding state 0

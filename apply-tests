@@ -1,0 +1,33 @@
+#!/bin/bash
+
+TESTS=${TESTS:-./tests}
+BUILD=${BUILD:-./generated}
+SOURCE=${SOURCE:-./source}
+EXECUTABLE=${EXECUTABLE:-${BUILD}/run}
+
+for file in $(ls "$TESTS"); do
+    extension="${file##*.}"
+
+    if [[ "$extension" == "new" ]]; then
+        rm -f "$TESTS/$file"
+        continue
+    elif [[ "$extension" != "in" ]]; then
+        continue
+    fi
+
+    testcase=${file%.*}
+    basename="$TESTS/$testcase"
+    output=$($EXECUTABLE < "$basename.in" 2> "$basename.error")
+
+    if [[ -f "$basename.out" ]]; then
+        if [[ $(cat "$basename.out") != "$output" ]]; then
+            echo -e "==> [\e[34;1mUPDATED\e[0m] $testcase, see the '.new' file"
+            echo -e "$output" > "$basename.out"
+        else
+            echo -e "==> [\e[32;1mOK\e[0m] $testcase"
+        fi
+    else
+        echo -e "==> [\e[33;1mOK\e[0m] $testcase"
+        echo -e "$output" > "$basename.out"
+    fi
+done
