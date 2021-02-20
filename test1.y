@@ -127,10 +127,11 @@ typedef struct {
 	char * str;
 }
 
-%token	<val>DECIMAL
-%token	<str>HEXADECIMAL
-%token	<str>OCTAL
-%token	<str>BINARY
+%token	DECIMAL
+%token	HEXADECIMAL
+%token	OCTAL
+%token	BINARY
+%token	<str>VALUE
 %token	<str>ID
 %token	DIVIDER
 %token	NEWLINE
@@ -169,15 +170,17 @@ id	: ID	{ printf("%s\n", $1); }
 divider	: DIVIDER divider 	{}
 		| DIVIDER			{}
 
-num	: DECIMAL		{/*Возвращает 10-чное представление*/}
-	| HEXADECIMAL	{/*Возвращает 10-чное представление*/}
-	| OCTAL			{/*Возвращает 10-чное представление*/}
-	| BINARY		{/*Возвращает 10-чное представление*/}
+num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
+	| HEXADECIMAL VALUE	{ $<val>$ = toDecimalConvert(16, $2); }
+	| OCTAL	VALUE		{ $<val>$ = toDecimalConvert(8, $2); }
+	| BINARY VALUE		{ $<val>$ = toDecimalConvert(2, $2); }
 
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 int toDecimalConvert(int base, char * num) {
+	
+	return 0;
 	/*TODO конвертер по разным основаниям в 10-чную систему*/
 }
 
@@ -185,7 +188,6 @@ int toBaseConvert(int base, int num) {
 	/*Надо ли это нам? Как будем хранить не десятичные числа? Мб вообще в строках? А работать с 10-м представлением?*/
 	/*TODO конвертер по разным основаниям в 8-чную систему*/
 }
-
 
 int inArray(char * a[], char * arg) {
 	int length = sizeof(a)/sizeof(a[0]);
@@ -258,49 +260,6 @@ int isCommandName(char * arg) {
 	}
 	return result;
 }
-
-/*
-int isOneArgCommand(char * arg) {
-	const char * a[] =
-		{"LDAX", "STAX", "IN", "OUT", 
-		 "PUSH", "POP", "PCHL", "RST", 
-		 "ADD", "ADI", "ADC", "ACI", 
-		 "SUB", "SUI", "SBB", "SBI", 
-		 "CMP", "CPI", "INR", "INX", 
-		 "DCR", "DCX", "DAD", "ANA", 
-		 "ANI", "XRA", "XRI", "ORA", 
-		 "ORI"};
-	int length = sizeof(a)/sizeof(a[0]);
-	for (int i = 0; i < length; i++)
-	{
-		if (strcmp(arg, a[i]) == 0) 
-		{
-			return 1;
-		}
-	}
-	return 0;
-}
-
-int isTwoArgCommand(char * arg) {
-	const char * a[] =
-		{"MOV", "MVI", "LXI", "LXISP", 
-		 "LDA", "STA", "LHLD", "SHLD", 
-		 "JMP", "CALL", "JNZ", "JZ", 
-		 "JNC", "JC", "JPO", "JPE", 
-		 "JP", "JM", "CNZ", "CZ", 
-		 "CNC", "CC", "CPO", "CPE", 
-		 "CP", "CM"};
-	int length = sizeof(a)/sizeof(a[0]);
-	for (int i = 0; i < length; i++)
-	{
-		if (strcmp(arg, a[i]) == 0) 
-		{
-			return 1;
-		}
-	}
-	return 0;
-}
-*/
 
 //Встречено условное имя регистра/регистровой пары?
 int isRegisterName(char * arg) {

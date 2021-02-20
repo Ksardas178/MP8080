@@ -2,10 +2,11 @@
 #define HEXADECIMAL 258
 #define OCTAL 259
 #define BINARY 260
-#define ID 261
-#define DIVIDER 262
-#define NEWLINE 263
-#define LABEL 264
+#define VALUE 261
+#define ID 262
+#define DIVIDER 263
+#define NEWLINE 264
+#define LABEL 265
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

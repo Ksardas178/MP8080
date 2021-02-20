@@ -6,6 +6,7 @@ TEST T
 //newLine
 XCHG
 //newLine
+HHH d777
 LDAX 7
  //newLine and space
 MOV B H

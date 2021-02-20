@@ -29,10 +29,10 @@
   19  divider : DIVIDER divider
   20          | DIVIDER
 
-  21  num : DECIMAL
-  22      | HEXADECIMAL
-  23      | OCTAL
-  24      | BINARY
+  21  num : DECIMAL VALUE
+  22      | HEXADECIMAL VALUE
+  23      | OCTAL VALUE
+  24      | BINARY VALUE
 
 state 0
 	$accept : . text $end  (0)
@@ -221,27 +221,31 @@ state 16
 
 
 state 17
-	num : DECIMAL .  (21)
+	num : DECIMAL . VALUE  (21)
 
-	.  reduce 21
+	VALUE  shift 27
+	.  error
 
 
 state 18
-	num : HEXADECIMAL .  (22)
+	num : HEXADECIMAL . VALUE  (22)
 
-	.  reduce 22
+	VALUE  shift 28
+	.  error
 
 
 state 19
-	num : OCTAL .  (23)
+	num : OCTAL . VALUE  (23)
 
-	.  reduce 23
+	VALUE  shift 29
+	.  error
 
 
 state 20
-	num : BINARY .  (24)
+	num : BINARY . VALUE  (24)
 
-	.  reduce 24
+	VALUE  shift 30
+	.  error
 
 
 state 21
@@ -265,7 +269,7 @@ state 23
 	$end  reduce 14
 	NEWLINE  reduce 14
 
-	divider  goto 27
+	divider  goto 31
 
 
 state 24
@@ -292,6 +296,30 @@ state 26
 
 
 state 27
+	num : DECIMAL VALUE .  (21)
+
+	.  reduce 21
+
+
+state 28
+	num : HEXADECIMAL VALUE .  (22)
+
+	.  reduce 22
+
+
+state 29
+	num : OCTAL VALUE .  (23)
+
+	.  reduce 23
+
+
+state 30
+	num : BINARY VALUE .  (24)
+
+	.  reduce 24
+
+
+state 31
 	arguments : arg divider . arguments  (13)
 
 	DECIMAL  shift 17
@@ -302,13 +330,13 @@ state 27
 	.  error
 
 	id  goto 21
-	arguments  goto 28
+	arguments  goto 32
 	arg  goto 23
 	ariphmetic  goto 24
 	num  goto 25
 
 
-state 28
+state 32
 	arguments : arg divider arguments .  (13)
 
 	.  reduce 13
@@ -327,5 +355,5 @@ State 23 contains 1 shift/reduce conflict.
 State 26 contains 4 reduce/reduce conflicts.
 
 
-10 terminals, 11 nonterminals
-25 grammar rules, 29 states
+11 terminals, 11 nonterminals
+25 grammar rules, 33 states
