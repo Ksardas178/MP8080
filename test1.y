@@ -103,8 +103,8 @@ enum ARGTYPE
 typedef struct {
 	int expectedArgs;
 	int args;
-	char * opName;
-	int	 arg1;
+	char opName[10];
+	int	arg1;
 	int arg2;
 } operationDescription;
 	
@@ -167,8 +167,8 @@ arguments	: arg divider arguments {}
 			| arg divider			{}
 			| arg
 
-arg	: id			{ if (isRegisterName($<str>1) == 1) printf("found\n");}
-	| ariphmetic	{}
+arg	: id			{ if (isRegisterName($<str>1) == 1) printf("found\n"); }
+	| ariphmetic	{ numArgAnalyze($<val>1); }
 
 ariphmetic	: num	{/*Потом отсюда расширим арифметику*/}
 
@@ -186,7 +186,7 @@ num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 int toDecimalConvert(int base, char * num) {
-	return 0;
+	return 46;
 	/*TODO конвертер по разным основаниям в 10-чную систему*/
 }
 
@@ -194,6 +194,68 @@ int toBaseConvert(int base, int num) {
 	/*Надо ли это нам? Как будем хранить не десятичные числа? Мб вообще в строках? А работать с 10-м представлением?*/
 	/*TODO конвертер по разным основаниям в 8-чную систему*/
 }
+
+void numArgAnalyze(int arg) {
+	if (readingCommandLine == 1)
+	{
+		addOpDescArgument(arg);
+	}
+	else
+	{
+		printf("<ERROR> unexpected numeric argument\n");
+	}	
+}
+
+void addOpDescArgument(int arg) {
+	printf("called with arg %d\n", arg);
+	//Проверка на ожидаемое количество аргументов
+	if (opDesc.args >= opDesc.expectedArgs) 
+	{
+		printf("<ERROR> expected %d argument(s)\n", opDesc.expectedArgs);
+	} 
+	//Если аргумент отрицательный
+	else if (arg < 0)
+	{	
+		printf("<ERROR> expected non negative argument\n");
+	}
+	//Если получили двухбайтный аргумент
+	else if (arg >= 8)
+	{
+		printf(">=8. Get %d\n", arg);
+		addOpDescArgument(arg/8);
+		addOpDescArgument(arg%8);
+	}
+	else 
+	{
+		opDesc.args++;
+		printf("adding arg %d\n", arg);
+		switch (opDesc.args)
+		{
+			case 1:
+				switch (opDesc.expectedArgs) 
+				{
+					case 1:
+						opDesc.arg1 = arg;
+						break;
+					case 2:
+						opDesc.arg2 = arg;
+						break;
+					default:
+						printf("<ERROR> too much args expected\n");
+						break;
+				}
+				break;
+			case 2:
+				//Сдвигаем аргументы
+				opDesc.arg1 = opDesc.arg2;
+				opDesc.arg2 = arg;
+				break;
+		}
+	}
+	/*if (opDesc.args == opDesc.expectedArgs)
+		printf("parsed: %s %d %d\n", opDesc.opName, opDesc.arg1, opDesc.arg2);*/
+}
+
 
 //Инициализация переменной под новую операцию
 void operationAnalyze(char * name) {
@@ -203,8 +265,12 @@ void operationAnalyze(char * name) {
 		int t = isCommandName(name);
 		if (t != -1)
 		{
+			//printf ("initialized\n");
 			opDesc.expectedArgs = t;
+			strcpy(opDesc.opName, name);
 			opDesc.args = 0;
+			opDesc.arg1 = 0;
+			opDesc.arg2 = 0;
 			readingCommandLine = 1;
 		}
 		else
@@ -214,20 +280,7 @@ void operationAnalyze(char * name) {
 	}
 	else if (isRegisterName(name) == 1)
 	{
-		switch (opDesc.args) {
-			case 1:
-				opDesc.arg1 = argConvert(name);
-				break;
-			case 2:
-				opDesc.arg2 = argConvert(name);
-				break;
-		}
-		opDesc.args++;
-		//Проверка на ожидаемое количество аргументов
-		if (opDesc.args > opDesc.expectedArgs) 
-		{
-			printf("<ERROR> expected %d argument(s)\n", opDesc.expectedArgs);
-		}
+		addOpDescArgument(argConvert(name));
 	}
 }
 

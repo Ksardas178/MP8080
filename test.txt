@@ -1,4 +1,5 @@
 //comment
+MVI 46
 MOV B H //comment
 LXI B H
 MVI B H

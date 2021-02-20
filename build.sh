@@ -10,5 +10,6 @@ gcc -g *.c
 #./a.out < test.txt 1 > result.txt
 ./a.out < test.txt
 ./a.out < test2.txt
+./a.out < test3.txt
 
 
