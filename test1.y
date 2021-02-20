@@ -92,13 +92,6 @@ enum OPCODE
 	CMC,
 };	
 
-//Типы аргументов
-enum ARGTYPE
-{
-	NAME,
-	VALUE
-};
-
 //Описание команды:
 typedef struct {
 	int expectedArgs;
@@ -151,11 +144,13 @@ newLine	: NEWLINE					{}
 		| NEWLINE newLine			{}
 
 line: command 						{ 
-										printf("line parsed\n");
+										//printf("line parsed\n");
+										getCommand();
 									 	readingCommandLine = 0;
 									}
 	| LABEL			 			 	{ 
-										printf("line parsed\n");
+										//printf("line parsed\n");
+										getCommand();
 								 		readingCommandLine = 0;
 									}
 
@@ -167,7 +162,7 @@ arguments	: arg divider arguments {}
 			| arg divider			{}
 			| arg
 
-arg	: id			{ if (isRegisterName($<str>1) == 1) printf("found\n"); }
+arg	: id			{}
 	| ariphmetic	{ numArgAnalyze($<val>1); }
 
 ariphmetic	: num	{/*Потом отсюда расширим арифметику*/}
@@ -190,9 +185,18 @@ int toDecimalConvert(int base, char * num) {
 	/*TODO конвертер по разным основаниям в 10-чную систему*/
 }
 
-int toBaseConvert(int base, int num) {
-	/*Надо ли это нам? Как будем хранить не десятичные числа? Мб вообще в строках? А работать с 10-м представлением?*/
-	/*TODO конвертер по разным основаниям в 8-чную систему*/
+int[] toBinaryConvert(int num) {
+	char result[MAX_BINARY_LENGTH];
+	for (int i = MAX_BINARY_LENGTH-1; i >= 0; i--) {
+		result[i] = num%2;
+		num = num/2;
+	}
+	return result;
+}
+
+void getCommand() {
+	readingCommandLine = 0;
+	printf("\x1b[32;1mparsed: %s %d %d\n\x1b[0m", opDesc.opName, opDesc.arg1, opDesc.arg2);	
 }
 
 void numArgAnalyze(int arg) {
@@ -207,7 +211,7 @@ void numArgAnalyze(int arg) {
 }
 
 void addOpDescArgument(int arg) {
-	printf("called with arg %d\n", arg);
+	//printf("called with arg %d\n", arg);
 	//Проверка на ожидаемое количество аргументов
 	if (opDesc.args >= opDesc.expectedArgs) 
 	{
@@ -221,14 +225,14 @@ void addOpDescArgument(int arg) {
 	//Если получили двухбайтный аргумент
 	else if (arg >= 8)
 	{
-		printf(">=8. Get %d\n", arg);
+		//printf(">=8. Get %d\n", arg);
 		addOpDescArgument(arg/8);
 		addOpDescArgument(arg%8);
 	}
 	else 
 	{
 		opDesc.args++;
-		printf("adding arg %d\n", arg);
+		//printf("adding arg %d\n", arg);
 		switch (opDesc.args)
 		{
 			case 1:

@@ -781,7 +781,7 @@ YY_RULE_SETUP
 #line 20 "test1.l"
 { 
 									yylval.str = yytext;
-									printf ("read num: %s\n", yytext);
+									//printf ("read num: %s\n", yytext);
 									BEGIN INITIAL;
 								 	return VALUE;
 								}

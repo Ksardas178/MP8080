@@ -19,7 +19,7 @@ extern int lineCounter;
 <INITIAL>[a-zA-Z_]+[a-zA-Z0-9_]*:	{ yylval.str = yytext; return LABEL;}
 <sReadNum>[0-9a-fA-F]+			{ 
 									yylval.str = yytext;
-									printf ("read num: %s\n", yytext);
+									//printf ("read num: %s\n", yytext);
 									BEGIN INITIAL;
 								 	return VALUE;
 								}

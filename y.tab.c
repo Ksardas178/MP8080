@@ -131,8 +131,9 @@ operationDescription opDesc;
 	
 /*Флаги*/
 int readingCommandLine = 0;
+char * globalString;
 	
-#line 121 "test1.y"
+#line 122 "test1.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -144,7 +145,7 @@ typedef union {
 	char * str;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 148 "y.tab.c"
+#line 149 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -373,7 +374,7 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 186 "test1.y"
+#line 189 "test1.y"
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 int toDecimalConvert(int base, char * num) {
@@ -381,9 +382,21 @@ int toDecimalConvert(int base, char * num) {
 	/*TODO конвертер по разным основаниям в 10-чную систему*/
 }
 
-int toBaseConvert(int base, int num) {
-	/*Надо ли это нам? Как будем хранить не десятичные числа? Мб вообще в строках? А работать с 10-м представлением?*/
-	/*TODO конвертер по разным основаниям в 8-чную систему*/
+void toBinaryConvert(int num) {
+	char result[MAX_BINARY_LENGTH];
+	for (int i = MAX_BINARY_LENGTH-1; i >= 0; i--) {
+		result[i] = num%2;
+		num = num/2;
+	}
+	globalString = &result;
+}
+
+void getCommand() {
+	readingCommandLine = 0;
+	printf("\x1b[32;1mparsed: %s %d %d\n\x1b[0m", opDesc.opName, opDesc.arg1, opDesc.arg2);
+	toBinaryConvert(opDesc.arg1);
+	printf("\x1b[32;1mparsed: %s %s %s\n\x1b[0m", opDesc.opName, globalString, globalString);
+	
 }
 
 void numArgAnalyze(int arg) {
@@ -398,7 +411,7 @@ void numArgAnalyze(int arg) {
 }
 
 void addOpDescArgument(int arg) {
-	printf("called with arg %d\n", arg);
+	//printf("called with arg %d\n", arg);
 	//Проверка на ожидаемое количество аргументов
 	if (opDesc.args >= opDesc.expectedArgs) 
 	{
@@ -412,14 +425,14 @@ void addOpDescArgument(int arg) {
 	//Если получили двухбайтный аргумент
 	else if (arg >= 8)
 	{
-		printf(">=8. Get %d\n", arg);
+		//printf(">=8. Get %d\n", arg);
 		addOpDescArgument(arg/8);
 		addOpDescArgument(arg%8);
 	}
 	else 
 	{
 		opDesc.args++;
-		printf("adding arg %d\n", arg);
+		//printf("adding arg %d\n", arg);
 		switch (opDesc.args)
 		{
 			case 1:
@@ -622,7 +635,7 @@ int argConvert(char * arg) {
 LDAX|STAX|IN|OUT|PUSH|POP|PCHL|RST|ADD|ADI|ADC|ACI|SUB|SUI|SBB|SBI|CMP|CPI|INR|INX|DCR|DCX|DAD|ANA|ANI|XRA|XRI|ORA|ORI;
 
 MOV|MVI|LXI|LXISP|LDA|STA|LHLD|SHLD|JMP|CALL|JNZ|JZ|JNC|JC|JPO|JPE|JP|JM|CNZ|CZ|CNC|CC|CPO|CPE|CP|CM;*/
-#line 626 "y.tab.c"
+#line 639 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -825,124 +838,126 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 140 "test1.y"
-	{}
-break;
-case 2:
 #line 141 "test1.y"
 	{}
 break;
-case 3:
+case 2:
 #line 142 "test1.y"
 	{}
 break;
-case 4:
+case 3:
 #line 143 "test1.y"
 	{}
 break;
-case 5:
+case 4:
 #line 144 "test1.y"
 	{}
 break;
-case 6:
+case 5:
 #line 145 "test1.y"
 	{}
 break;
-case 7:
-#line 147 "test1.y"
+case 6:
+#line 146 "test1.y"
 	{}
 break;
-case 8:
+case 7:
 #line 148 "test1.y"
 	{}
 break;
-case 9:
+case 8:
 #line 149 "test1.y"
 	{}
 break;
-case 10:
+case 9:
 #line 150 "test1.y"
 	{}
 break;
-case 11:
+case 10:
 #line 151 "test1.y"
 	{}
 break;
+case 11:
+#line 152 "test1.y"
+	{}
+break;
 case 12:
-#line 153 "test1.y"
+#line 154 "test1.y"
 	{ 
-										printf("line parsed\n");
+										/*printf("line parsed\n");*/
+										getCommand();
 									 	readingCommandLine = 0;
 									}
 break;
 case 13:
-#line 157 "test1.y"
+#line 159 "test1.y"
 	{ 
-										printf("line parsed\n");
+										/*printf("line parsed\n");*/
+										getCommand();
 								 		readingCommandLine = 0;
 									}
 break;
 case 14:
-#line 162 "test1.y"
+#line 165 "test1.y"
 	{}
 break;
 case 15:
-#line 163 "test1.y"
-	{}
-break;
-case 16:
-#line 164 "test1.y"
-	{}
-break;
-case 17:
 #line 166 "test1.y"
 	{}
 break;
-case 18:
+case 16:
 #line 167 "test1.y"
 	{}
 break;
-case 20:
+case 17:
+#line 169 "test1.y"
+	{}
+break;
+case 18:
 #line 170 "test1.y"
-	{ if (isRegisterName(yystack.l_mark[0].str) == 1) printf("found\n"); }
+	{}
+break;
+case 20:
+#line 173 "test1.y"
+	{}
 break;
 case 21:
-#line 171 "test1.y"
+#line 174 "test1.y"
 	{ numArgAnalyze(yystack.l_mark[0].val); }
 break;
 case 22:
-#line 173 "test1.y"
+#line 176 "test1.y"
 	{/*Потом отсюда расширим арифметику*/}
 break;
 case 23:
-#line 175 "test1.y"
+#line 178 "test1.y"
 	{ printf("%s\n", yystack.l_mark[0].str); operationAnalyze(yystack.l_mark[0].str); }
 break;
 case 24:
-#line 177 "test1.y"
+#line 180 "test1.y"
 	{}
 break;
 case 25:
-#line 178 "test1.y"
+#line 181 "test1.y"
 	{}
 break;
 case 26:
-#line 180 "test1.y"
+#line 183 "test1.y"
 	{ yyval.val = toDecimalConvert(10, yystack.l_mark[0].str); }
 break;
 case 27:
-#line 181 "test1.y"
+#line 184 "test1.y"
 	{ yyval.val = toDecimalConvert(16, yystack.l_mark[0].str); }
 break;
 case 28:
-#line 182 "test1.y"
+#line 185 "test1.y"
 	{ yyval.val = toDecimalConvert(8, yystack.l_mark[0].str); }
 break;
 case 29:
-#line 183 "test1.y"
+#line 186 "test1.y"
 	{ yyval.val = toDecimalConvert(2, yystack.l_mark[0].str); }
 break;
-#line 946 "y.tab.c"
+#line 961 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
