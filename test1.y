@@ -145,9 +145,9 @@ text: line newLine text	{}
 	| line				{}
 
 newLine	: NEWLINE					{}
-		| divider NEWLINE 			{}
-		| NEWLINE divider 			{}
-		| divider NEWLINE divider	{}
+		| divider newLine 			{}
+		| newLine divider 			{}
+		| divider newLine divider	{}
 		| NEWLINE newLine			{}
 
 line: command 						{ printf("line parsed\n");}

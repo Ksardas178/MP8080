@@ -1,8 +1,22 @@
+Z Z Z
+	//newLine and tab
+TEST T
+	//newLine and tab
+	//newLine and tab
+//newLine
 XCHG
+//newLine
 LDAX 7
+ //newLine and space
 MOV B H
+
+//two newLines
 MVI D E
 MOV d567
+	
+		
+		   
+GHT 78 h117
 FTR o456 b10100001
 IN PSW
 OUT A
