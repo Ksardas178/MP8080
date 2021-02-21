@@ -1,6 +1,7 @@
-#include <string.h>
-#include "math.h"
+#include <math.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 int toDecimalConvert(int base, const char* sum) {
     int answer = 0;

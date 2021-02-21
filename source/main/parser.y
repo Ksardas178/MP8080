@@ -1,14 +1,14 @@
 //=====================================================
 %{
 #include <malloc.h>
-#include "my.h"
+#include <main/my.h>
 #include <string.h>
 #include <stdio.h>
 
 //Global variables&flags
-int lineCounter = 1;	
+int lineCounter = 1;
 int columnCounter = 0;
-	
+
 //Типы операций
 enum OPCODE
 {
@@ -90,7 +90,7 @@ enum OPCODE
 	RAR,
 	STC,
 	CMC
-};	
+};
 
 enum OUTPUTMODE
 {
@@ -99,18 +99,18 @@ enum OUTPUTMODE
 	M_NUMERIC,
 	M_CHECK
 };
-	
+
 typedef struct {
 	char content[MSG_LENGTH];
-} message;	
+} message;
 
 //Буфер хранения сообщений о ходе анализа функции
 typedef struct {
 	int size;
 	int stored;
 	message *p;
-} analyzeBuffer;	
-	
+} analyzeBuffer;
+
 //Описание команды:
 typedef struct {
 	int expectedArgs;
@@ -119,17 +119,17 @@ typedef struct {
 	int	arg1;
 	int arg2;
 } operationDescription;
-	
+
 //Информация об анализируемой операции
 operationDescription opDesc;
 analyzeBuffer analyzeBuf;
 char stringBuffer[MSG_LENGTH];
-	
+
 //Флаги
 int readingCommandLine = 0;
 int inProgram = 0;
 enum OUTPUTMODE globalMode = M_BINARY;
-	
+
 %}
 //=====================================================
 
@@ -149,7 +149,7 @@ enum OUTPUTMODE globalMode = M_BINARY;
 %token	NEWLINE
 %token	<str>LABEL
 
-%start _text													
+%start _text
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -168,12 +168,12 @@ newLine	: NEWLINE					{}
 		| divider newLine divider	{}
 		| NEWLINE newLine			{}
 
-line: command 						{ 
+line: command 						{
 										//printf("line parsed\n");
 										getCommand(globalMode);
 									 	readingCommandLine = 0;
 									}
-	| LABEL			 			 	{ 
+	| LABEL			 			 	{
 										//printf("line parsed\n");
 										getCommand(globalMode);
 								 		readingCommandLine = 0;
@@ -207,7 +207,7 @@ num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
 
 
 void toBaseConvert(int num, int base, int digits) {
-	for (int i = digits-1; i >= 0; i-=1) 
+	for (int i = digits-1; i >= 0; i-=1)
 	{
 		stringBuffer[i] = num % base + '0';
 		num = num / base;
@@ -217,7 +217,7 @@ void toBaseConvert(int num, int base, int digits) {
 
 void storeAnalizeBuf(char * msg) {
 	analyzeBuf.stored++;
-	if (analyzeBuf.stored > analyzeBuf.size) 
+	if (analyzeBuf.stored > analyzeBuf.size)
 	{
 		analyzeBuf.size+=ANALYZE_BUF_ALLOCATE_SIZE;
 		analyzeBuf.p = (message*)realloc(analyzeBuf.p, analyzeBuf.size * sizeof(message));
@@ -251,31 +251,31 @@ internalBinaryStore() {
 	}
 	else if (strcmp(opDesc.opName, "LXI") == 0)
 	{
-		
+
 	}
 	else if (strcmp(opDesc.opName, "LDA") == 0)
 	{
-		
+
 	}
 	else if (strcmp(opDesc.opName, "LDAX") == 0)
 	{
-		
+
 	}
 	else if (strcmp(opDesc.opName, "STA") == 0)
 	{
-		
+
 	}
 	else if (strcmp(opDesc.opName, "STAX") == 0)
 	{
-		
+
 	}
 }
 
 void getCommand(enum OUTPUTMODE mode) {
 	readingCommandLine = 0;
 	char temp[MSG_LENGTH];
-	switch (mode) 
-	{			
+	switch (mode)
+	{
 		case M_CHECK:
 			switch (opDesc.expectedArgs)
 			{
@@ -316,9 +316,9 @@ void analyzeBufInit() {
 
 void printAnalyzeBuf() {
 	printf("\n\x1b[30;1mCode analysis results:\n\x1b[0m______________________________\n");
-	for (int i = 0; i < analyzeBuf.stored; i++) 
+	for (int i = 0; i < analyzeBuf.stored; i++)
 	{
-		toBaseConvert(i, 2, 8);	
+		toBaseConvert(i, 2, 8);
 		printf("%s: %s", stringBuffer, analyzeBuf.p[i].content);
 	}
 	printf("\n");
@@ -332,19 +332,19 @@ void numArgAnalyze(int arg) {
 	else
 	{
 		printf("<ERROR> unexpected numeric argument\n");
-	}	
+	}
 }
 
 void addOpDescArgument(int arg) {
 	//printf("called with arg %d\n", arg);
 	//Проверка на ожидаемое количество аргументов
-	if (opDesc.args >= opDesc.expectedArgs) 
+	if (opDesc.args >= opDesc.expectedArgs)
 	{
 		printf("<ERROR> expected %d argument(s)\n", opDesc.expectedArgs);
-	} 
+	}
 	//Если аргумент отрицательный
 	else if (arg < 0)
-	{	
+	{
 		printf("<ERROR> expected non negative argument\n");
 	}
 	//Если получили двухбайтный аргумент
@@ -354,14 +354,14 @@ void addOpDescArgument(int arg) {
 		addOpDescArgument(arg/8);
 		addOpDescArgument(arg%8);
 	}
-	else 
+	else
 	{
 		opDesc.args++;
 		//printf("adding arg %d\n", arg);
 		switch (opDesc.args)
 		{
 			case 1:
-				switch (opDesc.expectedArgs) 
+				switch (opDesc.expectedArgs)
 				{
 					case 1:
 						opDesc.arg1 = arg;
@@ -393,7 +393,7 @@ void operationAnalyze(char * name) {
 		inProgram = 1;
 	}
 	//Проверяем, читаем уже команду или пока нет
-	if (readingCommandLine == 0) 
+	if (readingCommandLine == 0)
 	{
 		int t = isCommandName(name);
 		if (t != -1)
@@ -409,7 +409,7 @@ void operationAnalyze(char * name) {
 		else
 		{
 			printf("<ERROR> wrong command recieved\n");
-		}	
+		}
 	}
 	else if (isRegisterName(name) == 1)
 	{
@@ -421,7 +421,7 @@ int inArray(char * a[], char * arg, int l) {
 	//int l = sizeof(a)/sizeof(a[0]);
 	for (int i = 0; i < l; i++)
 	{
-		if (strcmp(arg, a[i]) == 0) 
+		if (strcmp(arg, a[i]) == 0)
 		{
 			return 1;
 		}
@@ -434,10 +434,10 @@ int isNArgCommand(char * arg, int n) {
 		case 0:
 			{
 				char * a[] =
-					{"XCHG", "XTHL", "SPHL", "PCHL", "RET", 
-					 "RNZ", "RZ", "RNC", "RC", "RPO", "RPE", 
-					 "RP", "RM", "EI", "DI", "NOP", "HLT", 
-					 "DAA", "CMA", "RLC", "RRC", "RAL", 
+					{"XCHG", "XTHL", "SPHL", "PCHL", "RET",
+					 "RNZ", "RZ", "RNC", "RC", "RPO", "RPE",
+					 "RP", "RM", "EI", "DI", "NOP", "HLT",
+					 "DAA", "CMA", "RLC", "RRC", "RAL",
 					 "RAR", "STC", "CMC" };
 				int l = sizeof(a)/sizeof(a[0]);
 				return inArray(a, arg, l);
@@ -445,13 +445,13 @@ int isNArgCommand(char * arg, int n) {
 		case 1:
 			{
 				char * a[] =
-					{"LDAX", "STAX", "IN", "OUT", 
-					 "PUSH", "POP", "PCHL", "RST", 
-					 "ADD", "ADI", "ADC", "ACI", 
-					 "SUB", "SUI", "SBB", "SBI", 
-					 "CMP", "CPI", "INR", "INX", 
-					 "DCR", "DCX", "DAD", "ANA", 
-					 "ANI", "XRA", "XRI", "ORA", 
+					{"LDAX", "STAX", "IN", "OUT",
+					 "PUSH", "POP", "PCHL", "RST",
+					 "ADD", "ADI", "ADC", "ACI",
+					 "SUB", "SUI", "SBB", "SBI",
+					 "CMP", "CPI", "INR", "INX",
+					 "DCR", "DCX", "DAD", "ANA",
+					 "ANI", "XRA", "XRI", "ORA",
 					 "ORI"};
 				int l = sizeof(a)/sizeof(a[0]);
 				return inArray(a, arg, l);
@@ -459,12 +459,12 @@ int isNArgCommand(char * arg, int n) {
 		case 2:
 			{
 				char * a[] =
-					{"MOV", "MVI", "LXI", "LDA", 
-					 "STA", "LHLD", "SHLD", 
-					 "JMP", "CALL", "JNZ", "JZ", 
-					 "JNC", "JC", "JPO", "JPE", 
-					 "JP", "JM", "CNZ", "CZ", 
-					 "CNC", "CC", "CPO", "CPE", 
+					{"MOV", "MVI", "LXI", "LDA",
+					 "STA", "LHLD", "SHLD",
+					 "JMP", "CALL", "JNZ", "JZ",
+					 "JNC", "JC", "JPO", "JPE",
+					 "JP", "JM", "CNZ", "CZ",
+					 "CNC", "CC", "CPO", "CPE",
 					 "CP", "CM"};
 				int l = sizeof(a)/sizeof(a[0]);
 				return inArray(a, arg, l);
@@ -487,7 +487,7 @@ int isCommandName(char * arg) {
 		found+=isNArgCommand(arg, i);
 		if (found > 0) result = i;
 	}
-	if (found > 1) 
+	if (found > 1)
 	{
 		printf ("<ERROR> command duplicates in command list\n");
 	}
@@ -496,12 +496,12 @@ int isCommandName(char * arg) {
 
 //Встречено условное имя регистра/регистровой пары?
 int isRegisterName(char * arg) {
-	const char * a[] = 
+	const char * a[] =
 		{"B", "C", "D", "E", "H", "L", "M", "A", "PSW", "SP"};
 	int length = sizeof(a)/sizeof(a[0]);
 	for (int i = 0; i < length; i++)
 	{
-		if (strcmp(arg, a[i]) == 0) 
+		if (strcmp(arg, a[i]) == 0)
 		{
 			return 1;
 		}
@@ -515,43 +515,43 @@ int argConvert(char * arg) {
 	{
 		return 0;
 	}
-	else if (strcmp(arg, "C") == 0) 
+	else if (strcmp(arg, "C") == 0)
 	{
 		return 1;
 	}
-	else if (strcmp(arg, "D") == 0) 
+	else if (strcmp(arg, "D") == 0)
 	{
 		return 2;
 	}
-	else if (strcmp(arg, "E") == 0) 
+	else if (strcmp(arg, "E") == 0)
 	{
 		return 3;
 	}
-	else if (strcmp(arg, "H") == 0) 
+	else if (strcmp(arg, "H") == 0)
 	{
 		return 4;
 	}
-	else if (strcmp(arg, "L") == 0) 
+	else if (strcmp(arg, "L") == 0)
 	{
 		return 5;
 	}
-	else if (strcmp(arg, "M") == 0) 
+	else if (strcmp(arg, "M") == 0)
 	{
 		return 6;
 	}
-	else if (strcmp(arg, "A") == 0) 
+	else if (strcmp(arg, "A") == 0)
 	{
 		return 7;
 	}
-	else if (strcmp(arg, "SP") == 0) 
+	else if (strcmp(arg, "SP") == 0)
 	{
 		return 6;
 	}
-	else if (strcmp(arg, "PSW") == 0) 
+	else if (strcmp(arg, "PSW") == 0)
 	{
 		return 6;
 	}
-	else 
+	else
 	{
 		printf("<ERROR>: unexpected argument\n");
 		return -1;
