@@ -4,10 +4,7 @@
 #include <main/my.h>
 #include <string.h>
 #include <stdio.h>
-
-//Global variables&flags
-int lineCounter = 1;
-int columnCounter = 0;
+#include <math.h>
 
 //Типы операций
 enum OPCODE
@@ -125,11 +122,20 @@ operationDescription opDesc;
 analyzeBuffer analyzeBuf;
 char stringBuffer[MSG_LENGTH];
 
-//Флаги
+//Флаги и глобальные переменные
 int readingCommandLine = 0;
 int inProgram = 0;
+int lineCounter = 1;
+int columnCounter = 1;
 enum OUTPUTMODE globalMode = M_CHECK;
 
+//Предописания
+void printAnalyzeBuf();
+void operationAnalyze(char * name);
+void numArgAnalyze(int arg);
+void getCommand(enum OUTPUTMODE mode);
+int toDecimalConvert(int base, const char* sum);
+	
 %}
 //=====================================================
 
@@ -145,7 +151,6 @@ enum OUTPUTMODE globalMode = M_CHECK;
 %token	BINARY
 %token	<str>VALUE
 %token	<str>ID
-%token	DIVIDER
 %token	NEWLINE
 %token	<str>LABEL
 %token	MULT
@@ -157,75 +162,50 @@ enum OUTPUTMODE globalMode = M_CHECK;
 %token	DEC
 %token	OPEN
 %token	CLOSE
+%token	SHL
+%token	SHR
 
 %start _text
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-_text	: text	{ printAnalyzeBuf(); }
+_text	: text	{ getCommand(globalMode); printAnalyzeBuf(); }
 
-text: newLine line newLine text	{}
-	| line newLine text			{}
-	| newLine line newLine		{}
-	| line newLine				{}
-	| newLine line				{}
-	| line						{}
+text: line text	{}
+	| line		{}
 
-newLine	: NEWLINE					{}
-		| divider newLine 			{}
-		| newLine divider 			{}
-		| divider newLine divider	{}
-		| NEWLINE newLine			{}
+line: arguments	{}
+	| LABEL		{}
 
-line: command 						{
-										//printf("line parsed\n");
-										getCommand(globalMode);
-									 	readingCommandLine = 0;
-									}
-	| LABEL			 			 	{
-										//printf("line parsed\n");
-										getCommand(globalMode);
-								 		readingCommandLine = 0;
-									}
+arguments	: arg arguments {}
+			| arg			{}
 
-command	: 	id divider arguments	{}
-		|	id divider				{}
-		|	id						{}
+arg	: ID			{ operationAnalyze($1); 	}
+	| ariphmetic6	{ numArgAnalyze($<val>1); 	}
 
-arguments	: arg divider arguments {}
-			| arg divider			{}
-			| arg
+ariphmetic6	: ariphmetic6 SHR ariphmetic5	{ $<val>$ = $<val>1/pow(2, $<val>3);	}
+			| ariphmetic6 SHL ariphmetic5	{ $<val>$ = $<val>1*pow(2, $<val>3);	}
+			| ariphmetic5					{ $<val>$ = $<val>1; 					}
 
-arg	: id			{}
-	| ariphmetic5	{ numArgAnalyze($<val>1); }
-
-ariphmetic5	: ariphmetic5 unstrDiv MINUS unstrDiv ariphmetic4	{ $<val>$ = $<val>1 - $<val>5; 	}
-			| ariphmetic5 unstrDiv PLUS unstrDiv ariphmetic4	{ $<val>$ = $<val>1 + $<val>5; 	}
-			| ariphmetic4										{ $<val>$ = $<val>1; 			}
+ariphmetic5	: ariphmetic5 MINUS ariphmetic4	{ $<val>$ = $<val>1 - $<val>3; 	}
+			| ariphmetic5 PLUS  ariphmetic4	{ $<val>$ = $<val>1 + $<val>3; 	}
+			| ariphmetic4					{ $<val>$ = $<val>1; 			}
 			
-ariphmetic4	: ariphmetic4 unstrDiv MULT unstrDiv ariphmetic3	{ $<val>$ = $<val>1 * $<val>5; 	}
-			| ariphmetic4 unstrDiv DIV 	unstrDiv ariphmetic3	{ $<val>$ = $<val>1 / $<val>5; 	}
-			| ariphmetic4 unstrDiv MOD 	unstrDiv ariphmetic3	{ $<val>$ = $<val>1 % $<val>5; 	}
-			| ariphmetic3										{ $<val>$ = $<val>1; 			}
+ariphmetic4	: ariphmetic4 MULT ariphmetic3	{ $<val>$ = $<val>1 * $<val>3; 	}
+			| ariphmetic4 DIV  ariphmetic3	{ $<val>$ = $<val>1 / $<val>3; 	}
+			| ariphmetic4 MOD  ariphmetic3	{ $<val>$ = $<val>1 % $<val>3; 	}
+			| ariphmetic3					{ $<val>$ = $<val>1; 			}
 
-ariphmetic3	: INC unstrDiv ariphmetic3	{ $<val>$ = $<val>3 + 1;	}
-			| DEC unstrDiv ariphmetic3	{ $<val>$ = $<val>3 - 1;	}
-			| ariphmetic2				{ $<val>$ = $<val>1;		}
+ariphmetic3	: INC  ariphmetic3	{ $<val>$ = $<val>2 + 1;	}
+			| DEC  ariphmetic3	{ $<val>$ = $<val>2 - 1;	}
+			| ariphmetic2		{ $<val>$ = $<val>1;		}
 
-ariphmetic2	: ariphmetic2 unstrDiv INC	{ $<val>$ = $<val>1 + 1;	}
-			| ariphmetic2 unstrDiv DEC	{ $<val>$ = $<val>1 - 1;	}
-			| ariphmetic1				{ $<val>$ = $<val>1;		}
+ariphmetic2	: ariphmetic2  INC	{ $<val>$ = $<val>1 + 1;	}
+			| ariphmetic2  DEC	{ $<val>$ = $<val>1 - 1;	}
+			| ariphmetic1		{ $<val>$ = $<val>1;		}
 
-ariphmetic1	: OPEN unstrDiv ariphmetic5 unstrDiv CLOSE	{ $<val>$ = $<val>3;	}
-			| num										{ $<val>$ = $<val>1;	}
-
-id	: ID	{ operationAnalyze($1); }
-
-divider	: DIVIDER divider 	{}
-		| DIVIDER			{}
-
-unstrDiv: DIVIDER	{}
-		|			{}
+ariphmetic1	: OPEN  ariphmetic5  CLOSE	{ $<val>$ = $<val>2;	}
+			| num						{ $<val>$ = $<val>1;	}
 
 num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
 	| HEXADECIMAL VALUE	{ $<val>$ = toDecimalConvert(16, $2); }
@@ -235,7 +215,7 @@ num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+//Перевод 10-чного числа в заданную СС и запись в глобальный буфер n знаков
 void toBaseConvert(int num, int base, int digits) {
 	for (int i = digits-1; i >= 0; i-=1)
 	{
@@ -245,6 +225,7 @@ void toBaseConvert(int num, int base, int digits) {
 	stringBuffer[digits] = '\0';
 }
 
+//Сохранение строки в буфер с транслированным кодом
 void storeAnalizeBuf(char * msg) {
 	analyzeBuf.stored++;
 	if (analyzeBuf.stored > analyzeBuf.size)
@@ -255,6 +236,7 @@ void storeAnalizeBuf(char * msg) {
 	strcpy(analyzeBuf.p[analyzeBuf.stored-1].content, msg);
 }
 
+//Сохранение числа в заданной СС в буфер трансляции
 void storeNumToAnalizeBuffer(int num, int base, int digits){
 	char temp[MSG_LENGTH];
 	toBaseConvert(num, base, digits);
@@ -262,7 +244,8 @@ void storeNumToAnalizeBuffer(int num, int base, int digits){
 	storeAnalizeBuf(temp);
 }
 
-internalBinaryStore() {
+//Внутренняя функция трансляции в двоичное представление
+void internalBinaryStore() {
 	const int base = 2;
 	const int digits = 8;
 	const int arg1 = opDesc.arg1;
@@ -318,7 +301,7 @@ void getCommand(enum OUTPUTMODE mode) {
 					storeAnalizeBuf(temp);
 					break;
 				default:
-					printf("<ERROR> too much args");
+					printf("line %d: <ERROR> too much args\n", lineCounter);
 					break;
 			}
 			break;
@@ -332,11 +315,12 @@ void getCommand(enum OUTPUTMODE mode) {
 			/*TODO*/
 			break;
 		default:
-			printf("<ERROR> unrecognized mode");
+			printf("line %d: <ERROR> unrecognized mode\n", lineCounter);
 			break;
 	}
 }
 
+//Инициализация буфера с транслированным кодом
 void analyzeBufInit() {
 	free(analyzeBuf.p);
 	analyzeBuf.stored = 0;
@@ -344,6 +328,7 @@ void analyzeBufInit() {
 	analyzeBuf.p = (message *)calloc(ANALYZE_BUF_INIT_SIZE, sizeof(message));
 }
 
+//Вывод буфера с транслированным кодом
 void printAnalyzeBuf() {
 	printf("\n\x1b[30;1mCode analysis results:\n\x1b[0m______________________________\n");
 	for (int i = 0; i < analyzeBuf.stored; i++)
@@ -354,33 +339,25 @@ void printAnalyzeBuf() {
 	printf("\n");
 }
 
-void numArgAnalyze(int arg) {
-	if (readingCommandLine == 1)
-	{
-		addOpDescArgument(arg);
-	}
-	else
-	{
-		printf("<ERROR> unexpected numeric argument\n");
-	}
-}
-
+//Добавление числового аргумента в буфер операции
 void addOpDescArgument(int arg) {
-	//printf("called with arg %d\n", arg);
+	//printf("line %d: called with arg %d\n", lineCounter, arg);
 	//Проверка на ожидаемое количество аргументов
-	if (opDesc.args >= opDesc.expectedArgs)
+	const int expected = opDesc.expectedArgs;
+	if (opDesc.args >= expected)
 	{
-		printf("<ERROR> expected %d argument(s)\n", opDesc.expectedArgs);
+		printf("line %d: <ERROR> expected %d argument(s)\n", lineCounter, expected);
 	}
 	//Если аргумент отрицательный
 	else if (arg < 0)
 	{
-		printf("<ERROR> expected non negative argument\n");
+		printf("line %d: <ERROR> expected non negative argument\n", lineCounter);
 	}
 	//Если получили двухбайтный аргумент
 	else if (arg >= 8)
 	{
 		//printf(">=8. Get %d\n", arg);
+		printf("line %d: <WARNING> argument adapted to match %d 8-bit value(s)\n", lineCounter, expected);
 		addOpDescArgument(arg/8);
 		addOpDescArgument(arg%8);
 	}
@@ -391,7 +368,7 @@ void addOpDescArgument(int arg) {
 		switch (opDesc.args)
 		{
 			case 1:
-				switch (opDesc.expectedArgs)
+				switch (expected)
 				{
 					case 1:
 						opDesc.arg1 = arg;
@@ -400,7 +377,7 @@ void addOpDescArgument(int arg) {
 						opDesc.arg2 = arg;
 						break;
 					default:
-						printf("<ERROR> too much args expected\n");
+						printf("line %d: <ERROR> too much args expected\n", lineCounter);
 						break;
 				}
 				break;
@@ -409,44 +386,26 @@ void addOpDescArgument(int arg) {
 				opDesc.arg1 = opDesc.arg2;
 				opDesc.arg2 = arg;
 				break;
+			default:
+				printf("line %d: <ERROR> too much args in operation\n", lineCounter);
+				break;
 		}
 	}
 }
 
-
-//Инициализация переменной под новую операцию
-void operationAnalyze(char * name) {
-	//Только вошли в программу?
-	if (inProgram == 0)
+//Добавление в описание команды числового аргумента
+void numArgAnalyze(int arg) {
+	if (readingCommandLine == 1)
 	{
-		analyzeBufInit();
-		inProgram = 1;
+		addOpDescArgument(arg);
 	}
-	//Проверяем, читаем уже команду или пока нет
-	if (readingCommandLine == 0)
+	else
 	{
-		int t = isCommandName(name);
-		if (t != -1)
-		{
-			//printf ("initialized\n");
-			opDesc.expectedArgs = t;
-			strcpy(opDesc.opName, name);
-			opDesc.args = 0;
-			opDesc.arg1 = 0;
-			opDesc.arg2 = 0;
-			readingCommandLine = 1;
-		}
-		else
-		{
-			printf("<ERROR> wrong command recieved\n");
-		}
-	}
-	else if (isRegisterName(name) == 1)
-	{
-		addOpDescArgument(argConvert(name));
+		printf("line %d: <ERROR> unexpected numeric argument\n", lineCounter);
 	}
 }
 
+//Содержит ли массив длины l аргумент?
 int inArray(char * a[], char * arg, int l) {
 	//int l = sizeof(a)/sizeof(a[0]);
 	for (int i = 0; i < l; i++)
@@ -459,6 +418,7 @@ int inArray(char * a[], char * arg, int l) {
 	return 0;
 }
 
+//Проверяет, действительно ли у команды n аргументов
 int isNArgCommand(char * arg, int n) {
 	switch (n) {
 		case 0:
@@ -500,7 +460,7 @@ int isNArgCommand(char * arg, int n) {
 				return inArray(a, arg, l);
 			}
 		default:
-			printf("<ERROR> wrong argument amount\n");
+			printf("line %d: <ERROR> wrong argument amount\n", lineCounter);
 			return 0;
 	}
 }
@@ -519,24 +479,9 @@ int isCommandName(char * arg) {
 	}
 	if (found > 1)
 	{
-		printf ("<ERROR> command duplicates in command list\n");
+		printf ("line %d: <ERROR> command duplicates in command list\n", lineCounter);
 	}
 	return result;
-}
-
-//Встречено условное имя регистра/регистровой пары?
-int isRegisterName(char * arg) {
-	const char * a[] =
-		{"B", "C", "D", "E", "H", "L", "M", "A", "PSW", "SP"};
-	int length = sizeof(a)/sizeof(a[0]);
-	for (int i = 0; i < length; i++)
-	{
-		if (strcmp(arg, a[i]) == 0)
-		{
-			return 1;
-		}
-	}
-	return 0;
 }
 
 //Конвертация символьного значения регистра/регистровой пары в числовое
@@ -583,14 +528,70 @@ int argConvert(char * arg) {
 	}
 	else
 	{
-		printf("<ERROR>: unexpected argument\n");
+		printf("line %d: <ERROR>: unexpected argument\n", lineCounter);
 		return -1;
 	}
 }
 
-/*Full command list*/
-/*XCHG|XTHL|SPHL|PCHL|RET|RNZ|RZ|RNC|RC|RPO|RPE|RP|RM|EI|DI|NOP|HLT|DAA|CMA|RLC|RRC|RAL|RAR|STC|CMC;
+//Встречено условное имя регистра/регистровой пары?
+int isRegisterName(char * arg) {
+	const char * a[] =
+		{"B", "C", "D", "E", "H", "L", "M", "A", "PSW", "SP"};
+	int length = sizeof(a)/sizeof(a[0]);
+	for (int i = 0; i < length; i++)
+	{
+		if (strcmp(arg, a[i]) == 0)
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
 
-LDAX|STAX|IN|OUT|PUSH|POP|PCHL|RST|ADD|ADI|ADC|ACI|SUB|SUI|SBB|SBI|CMP|CPI|INR|INX|DCR|DCX|DAD|ANA|ANI|XRA|XRI|ORA|ORI;
-
-MOV|MVI|LXI|LXISP|LDA|STA|LHLD|SHLD|JMP|CALL|JNZ|JZ|JNC|JC|JPO|JPE|JP|JM|CNZ|CZ|CNC|CC|CPO|CPE|CP|CM;*/
+//Инициализация переменной под новую операцию
+void operationAnalyze(char * name) {
+	//Только вошли в программу?
+	if (inProgram == 0)
+	{
+		analyzeBufInit();
+		inProgram = 1;
+	}
+	//Уже читаем команду? А аргументов не много захапали?
+	if (readingCommandLine == 1 && opDesc.args >= opDesc.expectedArgs) 
+	{
+		//Много. Записываем команду (внутри обнуляется флаг)
+		//printf("line %d: get cmd with %d args (%d, %d)\n", lineCounter-1, opDesc.args, opDesc.arg1, opDesc.arg2);
+		getCommand(globalMode);
+	}	
+	//Проверяем, читаем уже команду или пока нет
+	if (readingCommandLine == 0)
+	{
+		int t = isCommandName(name);
+		//Команда есть такая?
+		if (t != -1)
+		{
+			//printf ("initialized\n");
+			opDesc.expectedArgs = t;
+			strcpy(opDesc.opName, name);
+			opDesc.args = 0;
+			opDesc.arg1 = 0;
+			opDesc.arg2 = 0;
+			readingCommandLine = 1;
+		}
+		//Нет такой команды. Ошибка
+		else
+		{
+			printf("line %d: <ERROR> wrong command recieved\n", lineCounter);
+		}
+	}
+	//Не все аргументы получили пока. А имя-то такое найдется?
+	else if (isRegisterName(name) == 1)
+	{
+		addOpDescArgument(argConvert(name));
+	}
+	//Нет такого имени. Ловите ошибку.
+	else
+	{
+		printf("line %d: <ERROR> wrong register name recieved\n", lineCounter);
+	}
+}
