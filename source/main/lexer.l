@@ -56,6 +56,15 @@ extern int lineCounter;
 									lineCounter+=yyleng;
 									return NEWLINE;
 								}
+<INITIAL>\*						{ return MULT; 	}
+<INITIAL>\/						{ return DIV; 	}
+<INITIAL>%						{ return MOD;	}
+<INITIAL>\+\+					{ return INC; 	}
+<INITIAL>\+						{ return PLUS; 	}
+INITIAL>--						{ return DEC;	}
+<INITIAL>-						{ return MINUS; }
+<INITIAL>\(						{ return OPEN; 	}
+<INITIAL>\)						{ return CLOSE; }
 <INITIAL>(.)	    			return yytext[0];
 %%
 

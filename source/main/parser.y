@@ -128,7 +128,7 @@ char stringBuffer[MSG_LENGTH];
 //Флаги
 int readingCommandLine = 0;
 int inProgram = 0;
-enum OUTPUTMODE globalMode = M_BINARY;
+enum OUTPUTMODE globalMode = M_CHECK;
 
 %}
 //=====================================================
@@ -148,6 +148,15 @@ enum OUTPUTMODE globalMode = M_BINARY;
 %token	DIVIDER
 %token	NEWLINE
 %token	<str>LABEL
+%token	MULT
+%token	DIV
+%token	MOD
+%token	PLUS
+%token	MINUS
+%token	INC
+%token	DEC
+%token	OPEN
+%token	CLOSE
 
 %start _text
 
@@ -188,14 +197,35 @@ arguments	: arg divider arguments {}
 			| arg
 
 arg	: id			{}
-	| ariphmetic	{ numArgAnalyze($<val>1); }
+	| ariphmetic5	{ numArgAnalyze($<val>1); }
 
-ariphmetic	: num	{/*Потом отсюда расширим арифметику*/}
+ariphmetic5	: ariphmetic5 unstrDiv MINUS unstrDiv ariphmetic4	{ $<val>$ = $<val>1 - $<val>5; 	}
+			| ariphmetic5 unstrDiv PLUS unstrDiv ariphmetic4	{ $<val>$ = $<val>1 + $<val>5; 	}
+			| ariphmetic4										{ $<val>$ = $<val>1; 			}
+			
+ariphmetic4	: ariphmetic4 unstrDiv MULT unstrDiv ariphmetic3	{ $<val>$ = $<val>1 * $<val>5; 	}
+			| ariphmetic4 unstrDiv DIV 	unstrDiv ariphmetic3	{ $<val>$ = $<val>1 / $<val>5; 	}
+			| ariphmetic4 unstrDiv MOD 	unstrDiv ariphmetic3	{ $<val>$ = $<val>1 % $<val>5; 	}
+			| ariphmetic3										{ $<val>$ = $<val>1; 			}
+
+ariphmetic3	: INC unstrDiv ariphmetic3	{ $<val>$ = $<val>3 + 1;	}
+			| DEC unstrDiv ariphmetic3	{ $<val>$ = $<val>3 - 1;	}
+			| ariphmetic2				{ $<val>$ = $<val>1;		}
+
+ariphmetic2	: ariphmetic2 unstrDiv INC	{ $<val>$ = $<val>1 + 1;	}
+			| ariphmetic2 unstrDiv DEC	{ $<val>$ = $<val>1 - 1;	}
+			| ariphmetic1				{ $<val>$ = $<val>1;		}
+
+ariphmetic1	: OPEN unstrDiv ariphmetic5 unstrDiv CLOSE	{ $<val>$ = $<val>3;	}
+			| num										{ $<val>$ = $<val>1;	}
 
 id	: ID	{ operationAnalyze($1); }
 
 divider	: DIVIDER divider 	{}
 		| DIVIDER			{}
+
+unstrDiv: DIVIDER	{}
+		|			{}
 
 num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
 	| HEXADECIMAL VALUE	{ $<val>$ = toDecimalConvert(16, $2); }
