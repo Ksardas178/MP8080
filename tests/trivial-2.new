@@ -1,0 +1,17 @@
+line 6: <ERROR> wrong register name recieved
+line 7: <ERROR> expected 2 argument(s)
+line 8: <ERROR> wrong register name recieved
+line 10: <ERROR> wrong register name recieved
+line 11: <ERROR> wrong register name recieved
+line 12: <ERROR> wrong register name recieved
+line 12: <ERROR> expected 2 argument(s)
+
+[30;1mCode analysis results:
+[0m______________________________
+00000000: MOV 1 2
+00000001: MVI 1 2
+00000010: LXI 1 2
+00000011: LDA 1 2
+00000100: LDAX 1 1
+00000101: STAX 1 1
+00000110: OUT 1 1

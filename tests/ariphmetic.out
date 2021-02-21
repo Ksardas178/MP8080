@@ -1,0 +1,9 @@
+line 2: <WARNING> argument adapted to match 2 8-bit value(s)
+line 3: <WARNING> argument adapted to match 2 8-bit value(s)
+line 3: <WARNING> argument adapted to match 2 8-bit value(s)
+
+[30;1mCode analysis results:
+[0m______________________________
+00000000: JZ 2 7
+00000001: JZ 2 7
+00000010: JZ 2 3
