@@ -284,6 +284,7 @@ void internalBinaryStore() {
 	}
 }
 
+//Запись операции в буфер трансляции
 void getCommand(enum OUTPUTMODE mode) {
 	readingCommandLine = 0;
 	char temp[MSG_LENGTH];
@@ -320,7 +321,7 @@ void getCommand(enum OUTPUTMODE mode) {
 	}
 }
 
-//Инициализация буфера с транслированным кодом
+//Инициализация буфера трансляции
 void analyzeBufInit() {
 	free(analyzeBuf.p);
 	analyzeBuf.stored = 0;
@@ -328,7 +329,7 @@ void analyzeBufInit() {
 	analyzeBuf.p = (message *)calloc(ANALYZE_BUF_INIT_SIZE, sizeof(message));
 }
 
-//Вывод буфера с транслированным кодом
+//Вывод буфера трансляции
 void printAnalyzeBuf() {
 	printf("\n\x1b[30;1mCode analysis results:\n\x1b[0m______________________________\n");
 	for (int i = 0; i < analyzeBuf.stored; i++)
