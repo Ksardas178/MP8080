@@ -127,7 +127,7 @@ int readingCommandLine = 0;
 int inProgram = 0;
 int lineCounter = 1;
 int columnCounter = 1;
-enum OUTPUTMODE globalMode = M_CHECK;
+enum OUTPUTMODE globalMode = M_BINARY;
 
 //Предописания
 void printAnalyzeBuf();
@@ -244,27 +244,38 @@ void storeNumToAnalizeBuffer(int num, int base, int digits){
 	storeAnalizeBuf(temp);
 }
 
+void storeBytesToAnalyzeByffer(int * a[], int l, int base, int digits) {
+	for (int i = 0; i < l; i++)
+	{
+		storeNumToAnalizeBuffer(a[i], base, digits);
+	}
+}
+
 //Внутренняя функция трансляции в двоичное представление
 void internalBinaryStore() {
 	const int base = 2;
 	const int digits = 8;
 	const int arg1 = opDesc.arg1;
 	const int arg2 = opDesc.arg2;
+	int * a[10];
+	int l;
 	if (strcmp(opDesc.opName, "MOV") == 0)
 	{
-		storeNumToAnalizeBuffer(1, base, digits);
-		storeNumToAnalizeBuffer(arg1, base, digits);
-		storeNumToAnalizeBuffer(arg2, base, digits);
+		a[0] = 1;
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "MVI") == 0)
 	{
-		storeNumToAnalizeBuffer(0, base, digits);
-		storeNumToAnalizeBuffer(arg1, base, digits);
-		storeNumToAnalizeBuffer(arg2, base, digits);
+		a[0] = 0;
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "LXI") == 0)
 	{
-
+		
 	}
 	else if (strcmp(opDesc.opName, "LDA") == 0)
 	{
@@ -282,6 +293,7 @@ void internalBinaryStore() {
 	{
 
 	}
+	storeBytesToAnalyzeByffer(a, l, base, digits);
 }
 
 //Запись операции в буфер трансляции
@@ -408,7 +420,6 @@ void numArgAnalyze(int arg) {
 
 //Содержит ли массив длины l аргумент?
 int inArray(char * a[], char * arg, int l) {
-	//int l = sizeof(a)/sizeof(a[0]);
 	for (int i = 0; i < l; i++)
 	{
 		if (strcmp(arg, a[i]) == 0)
@@ -424,7 +435,7 @@ int isNArgCommand(char * arg, int n) {
 	switch (n) {
 		case 0:
 			{
-				char * a[] =
+				const char * a[] =
 					{"XCHG", "XTHL", "SPHL", "PCHL", "RET",
 					 "RNZ", "RZ", "RNC", "RC", "RPO", "RPE",
 					 "RP", "RM", "EI", "DI", "NOP", "HLT",
@@ -435,7 +446,7 @@ int isNArgCommand(char * arg, int n) {
 			}
 		case 1:
 			{
-				char * a[] =
+				const char * a[] =
 					{"LDAX", "STAX", "IN", "OUT",
 					 "PUSH", "POP", "PCHL", "RST",
 					 "ADD", "ADI", "ADC", "ACI",
@@ -449,7 +460,7 @@ int isNArgCommand(char * arg, int n) {
 			}
 		case 2:
 			{
-				char * a[] =
+				const char * a[] =
 					{"MOV", "MVI", "LXI", "LDA",
 					 "STA", "LHLD", "SHLD",
 					 "JMP", "CALL", "JNZ", "JZ",
