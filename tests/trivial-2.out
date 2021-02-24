@@ -1,17 +1,14 @@
-line 5: <WARNING> must be B, D, C or SP register specified
-line 6: <WARNING> must be B or D register specified
-line 8: <WARNING> must be B or D register specified
 
-[31;1mErrors: 1
+[31;1mErrors: 3
 [0m
 [30;1mCode analysis results:
 [0m______________________________
 00000000: 01001010
 00000001: 00001110
 00000010: 00000010
-00000011: 00001001
-00000100: 00000010
-00000101: 00000001
+00000011: 00111010
+00000100: 00000001
+00000101: 00000010
 00000110: 00010010
 00000111: 00110010
 00001000: 00000001
@@ -26,3 +23,6 @@ line 8: <WARNING> must be B or D register specified
 00010001: 00101010
 00010010: 00000001
 00010011: 00000010
+00010100: 00101010
+00010101: 00000001
+00010110: 00000010

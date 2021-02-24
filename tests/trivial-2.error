@@ -1,2 +1,3 @@
-line 4: wrong register name recieved
-line 5: <ERROR> expected 3 argument(s)
+line 4: <ERROR> expected argument but recieved command
+line 6: <ERROR> first argument must be B or D register specified
+line 8: <ERROR> first argument must be B or D register specified

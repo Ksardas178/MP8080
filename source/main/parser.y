@@ -45,7 +45,7 @@ int lineCounter = 1;
 int warningCounter = 0;
 int errorCounter = 0;
 int columnCounter = 1;
-enum OUTPUTMODE globalMode = M_CHECK;
+enum OUTPUTMODE globalMode = M_BINARY;
 
 //Предописания
 void printAnalyzeBuf();
@@ -198,7 +198,8 @@ void internalBinaryStore() {
 	{
 		if (arg1 % 2 != 0)
 		{
-			printf("line %d: <WARNING> must be B, D, C or SP register specified\n", lineCounter);
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, C or SP register specified\n", lineCounter);
 		}
 		
 		a[0] = generateCommandNameCode(0, arg1, 1);
@@ -217,7 +218,8 @@ void internalBinaryStore() {
 	{
 		if (arg1 != 0 && arg1 != 2)
 		{
-			printf("line %d: <WARNING> must be B or D register specified\n", lineCounter);
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> first argument must be B or D register specified\n", lineCounter);
 		}
 		
 		a[0] = generateCommandNameCode(0, arg1+1, 2);
@@ -234,7 +236,8 @@ void internalBinaryStore() {
 	{
 		if (arg1 != 0 && arg1 != 2)
 		{
-			printf("line %d: <WARNING> must be B or D register specified\n", lineCounter);
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> first argument must be B or D register specified\n", lineCounter);
 		}
 		
 		a[0] = generateCommandNameCode(0, arg1, 2);
@@ -290,7 +293,8 @@ void internalBinaryStore() {
 	{
 		if (arg1 % 2 != 0)
 		{
-			printf("line %d: <WARNING> must be B, D, H or PSW register specified\n", lineCounter);
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, H or PSW register specified\n", lineCounter);
 		}
 		
 		a[0] = generateCommandNameCode(3, arg1, 5);
@@ -300,7 +304,8 @@ void internalBinaryStore() {
 	{
 		if (arg1 % 2 != 0)
 		{
-			printf("line %d: <WARNING> must be B, D, H or PSW register specified\n", lineCounter);
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, H or PSW register specified\n", lineCounter);
 		}
 		
 		a[0] = generateCommandNameCode(3, arg1, 1);
@@ -571,7 +576,8 @@ void internalBinaryStore() {
 	{
 		if (arg1 % 2 != 0)
 		{
-			printf("line %d: <WARNING> must be B, D, C or SP register specified\n", lineCounter);
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, C or SP register specified\n", lineCounter);
 		}
 		
 		a[0] = generateCommandNameCode(0, arg1, 3);
@@ -586,7 +592,8 @@ void internalBinaryStore() {
 	{
 		if (arg1 % 2 != 0)
 		{
-			printf("line %d: <WARNING> must be B, D, C or SP register specified\n", lineCounter);
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, C or SP register specified\n", lineCounter);
 		}
 		
 		a[0] = generateCommandNameCode(0, arg1+1, 3);
@@ -596,7 +603,8 @@ void internalBinaryStore() {
 	{
 		if (arg1 % 2 != 0)
 		{
-			printf("line %d: <WARNING> must be B, D, C or SP register specified\n", lineCounter);
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, C or SP register specified\n", lineCounter);
 		}
 		
 		a[0] = generateCommandNameCode(0, arg1+1, 1);

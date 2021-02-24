@@ -1,3 +1,4 @@
-line 2: <WARNING> argument adapted to match 2 8-bit value(s)
-line 3: <WARNING> argument adapted to match 2 8-bit value(s)
-line 3: <WARNING> argument adapted to match 2 8-bit value(s)
+line 4: <ERROR> expected argument but recieved command
+line 5: <ERROR> expected argument but recieved command
+line 6: <ERROR> expected argument but recieved command
+line 6: <ERROR> too few arguments in command. Expected 2
