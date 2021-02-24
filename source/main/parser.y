@@ -6,89 +6,6 @@
 #include <stdio.h>
 #include <math.h>
 
-//Типы операций
-enum OPCODE
-{
-	MOV,
-	MVI,
-	LXI,
-	LDA,
-	LDAX,
-	STA,
-	STAX,
-	IN,
-	OUT,
-	XCHG,
-	XTHL,
-	LHLD,
-	SHLD,
-	SPHL,
-	PCHL,
-	PUSH,
-	POP,
-	JMP,
-	CALL,
-	RET,
-	RST,
-	JNZ,
-	JZ,
-	JNC,
-	JC,
-	JPO,
-	JPE,
-	JP,
-	JM,
-	CNZ,
-	CZ,
-	CNC,
-	CC,
-	CPO,
-	CPE,
-	CP,
-	CM,
-	RNZ,
-	RZ,
-	RNC,
-	RC,
-	RPO,
-	RPE,
-	RP,
-	RM,
-	EI,
-	DI,
-	NOP,
-	HLT,
-	ADD,
-	ADI,
-	ADC,
-	ACI,
-	SUB,
-	SUI,
-	SBB,
-	SBI,
-	CMP,
-	CPI,
-	INR,
-	INX,
-	DCR,
-	DCX,
-	DAD,
-	DAA,
-	ANA,
-	ANI,
-	XRA,
-	XRI,
-	ORA,
-	ORI,
-	CMA,
-	RLC,
-	RRC,
-	RAL,
-	RAR,
-	STC,
-	CMC
-};
-
 enum OUTPUTMODE
 {
 	M_BINARY,
@@ -124,7 +41,7 @@ char stringBuffer[MSG_LENGTH];
 //Флаги и глобальные переменные
 int readingCommandLine = 0;
 int inProgram = 0;
-int lineCounter = 0;
+int lineCounter = 1;
 int warningCounter = 0;
 int errorCounter = 0;
 int columnCounter = 1;
@@ -873,64 +790,55 @@ void internalBinaryStore() {
 	storeBytesToAnalyzeBuffer(a, l, base, digits);
 }
 
-void checkArguments() {
-	//Аргументов больше, чем ожидали?
-	if (opDesc.args > opDesc.expectedArgs)
-	{
-		errorCounter++;
-		fprintf(stderr, "line %d: <ERROR> too much arguments. Expected %d\n", lineCounter, opDesc.expectedArgs);
-	} 
-	//Меньше, чем ожидали?
-	else if (opDesc.args < opDesc.expectedArgs)
-	{
-		warningCounter++;
-		fprintf(stderr, "line %d: <WARNING> too less arguments. Expected %d\n", lineCounter, opDesc.expectedArgs);
-	}
-}
-
 //Запись операции в буфер трансляции
 void getCommand() {
-	readingCommandLine = 0;
-	checkArguments();
-	char temp[MSG_LENGTH];
-	switch (globalMode)
+	if (opDesc.args < opDesc.expectedArgs)
 	{
-		case M_CHECK:
-			switch (opDesc.expectedArgs)
-			{
-				case 0:
-					sprintf(temp, "%s\n", opDesc.opName);
-					storeAnalyzeBuf(temp);
-					break;
-				case 1:
-					sprintf(temp, "%s %d\n", opDesc.opName, opDesc.arg[0]);
-					storeAnalyzeBuf(temp);
-					break;
-				case 2:
-					sprintf(temp, "%s %d %d\n", opDesc.opName, opDesc.arg[0], opDesc.arg[1]);
-					storeAnalyzeBuf(temp);
-					break;
-				case 3:
-					sprintf(temp, "%s %d %d %d\n", opDesc.opName, opDesc.arg[0], opDesc.arg[1], opDesc.arg[2]);
-					storeAnalyzeBuf(temp);
-					break;
-				default:
-					printf("line %d: <INTERNAL_ERROR> too much args\n", lineCounter);
-					break;
-			}
-			break;
-		case M_BINARY:
-			internalBinaryStore();
-			break;
-		case M_OCTAL:
-			/*TODO*/
-			break;
-		case M_NUMERIC:
-			/*TODO*/
-			break;
-		default:
-			printf("line %d: <INTERNAL_ERROR> unrecognized mode\n", lineCounter);
-			break;
+		fprintf(stderr, "line %d: <ERROR> too few arguments in command. Expected %d\n", lineCounter, opDesc.expectedArgs);
+	}
+	else
+	{
+		readingCommandLine = 0;
+		char temp[MSG_LENGTH];
+		switch (globalMode)
+		{
+			case M_CHECK:
+				switch (opDesc.expectedArgs)
+				{
+					case 0:
+						sprintf(temp, "%s\n", opDesc.opName);
+						storeAnalyzeBuf(temp);
+						break;
+					case 1:
+						sprintf(temp, "%s %d\n", opDesc.opName, opDesc.arg[0]);
+						storeAnalyzeBuf(temp);
+						break;
+					case 2:
+						sprintf(temp, "%s %d %d\n", opDesc.opName, opDesc.arg[0], opDesc.arg[1]);
+						storeAnalyzeBuf(temp);
+						break;
+					case 3:
+						sprintf(temp, "%s %d %d %d\n", opDesc.opName, opDesc.arg[0], opDesc.arg[1], opDesc.arg[2]);
+						storeAnalyzeBuf(temp);
+						break;
+					default:
+						printf("line %d: <INTERNAL_ERROR> too much args\n", lineCounter);
+						break;
+				}
+				break;
+			case M_BINARY:
+				internalBinaryStore();
+				break;
+			case M_OCTAL:
+				/*TODO*/
+				break;
+			case M_NUMERIC:
+				/*TODO*/
+				break;
+			default:
+				printf("line %d: <INTERNAL_ERROR> unrecognized mode\n", lineCounter);
+				break;
+		}
 	}
 }
 
@@ -967,7 +875,7 @@ void printAnalyzeBuf() {
 	{
 		printf("\x1b[33;1mWarnings: %d\n\x1b[0m", warningCounter);
 	} 
-	else if (errorCounter > 0)
+	if (errorCounter == 0 && warningCounter == 0)
 	{
 		printf("\x1b[32;1mInput is correct\n\x1b[0m");
 	}
@@ -982,23 +890,7 @@ void printAnalyzeBuf() {
 
 //Добавление числового аргумента в буфер операции
 void addOpDescArgument(int arg) {
-	//Проверка на ожидаемое количество аргументов
 	const int expected = opDesc.expectedArgs;
-	//Если аргумент отрицательный
-	if (arg < 0)
-	{
-		errorCounter++;
-		fprintf(stderr, "line %d: <ERROR> expected non negative argument\n", lineCounter);
-	}
-	//Если получили двухбайтный аргумент
-	else if (arg >= 8)
-	{
-		warningCounter++;
-		fprintf(stderr, "line %d: <WARNING> argument adapted to match %d 8-bit value(s)\n", lineCounter, expected);
-		addOpDescArgument(arg/8);
-		addOpDescArgument(arg%8);
-	}
-	else
 	//<CMD ARG[0] ARG[1] ARG[2]>
 	{
 		opDesc.args++;
@@ -1021,19 +913,37 @@ void addOpDescArgument(int arg) {
 				break;
 		}
 	}
+	if (expected == opDesc.args)
+	{
+		//Пишем последний аргумент? Заносим команду в буфер
+		getCommand();
+	}
 }
 
 //Добавление в описание команды числового аргумента
 void numArgAnalyze(int arg) {
-	//Встретили, пока читали команду?
-	if (readingCommandLine == 1)
+	//Встретили, когда искали команду?
+	if (readingCommandLine == 0)
 	{
-		addOpDescArgument(arg);
+		//errorCounter++;
+		//fprintf(stderr, "line %d: <ERROR> unexpected command\n", lineCounter);
 	}
-	else
+	//Были в команде, но не ждали больше аргументов?
+	else if (opDesc.args == opDesc.expectedArgs)
 	{
 		errorCounter++;
-		fprintf(stderr, "line %d: <ERROR> unexpected numeric argument\n", lineCounter);
+		fprintf(stderr, "line %d: <ERROR> too much arguments. Expected %d\n", lineCounter, opDesc.expectedArgs);
+	}
+	//Если аргумент отрицательный
+	else if (arg < 0)
+	{
+		errorCounter++;
+		fprintf(stderr, "line %d: <ERROR> expected non negative argument\n", lineCounter);
+	}
+	//Читаем команду, ждем аргумент, он неотрицательный. Отлично
+	else
+	{	
+		addOpDescArgument(arg);
 	}
 }
 
@@ -1195,42 +1105,58 @@ void operationAnalyze(char * name) {
 	if (inProgram == 0)
 	{
 		analyzeBufInit();
+		commandInfoInit(t, name);
 		inProgram = 1;
 	}
-	//Встретили команду?
-	if (t != -1) 
-	{		
-		//До этого читали другую команду?
-		if (readingCommandLine == 1) 
-		{
-			//Сохраним прочитанную
-			getCommand();
-		}
-		//Инициализируем память под новую команду и ставим флаг
-		commandInfoInit(t, name);
-		readingCommandLine = 1;
-	} 
-	//Не встретили команду
-	else
+	//Находимся в режиме поиска команды
+	if (readingCommandLine == 0)
 	{
-		//А мы вообще команду сейчас читаем?
-		if (readingCommandLine == 0)
+		//Если нашли команду без аргументов
+		if (t == 0) 
+		{
+			//Сразу же выводим ее
+			commandInfoInit(t, name);
+			getCommand();
+			//Флаг не меняем - ищем новую команду
+		}
+		//Нашли не команду
+		else if (t == -1)
 		{
 			errorCounter++;
-			fprintf(stderr, "line %d: <ERROR> unexpected identifier: %s\n", lineCounter, name);
+			fprintf(stderr, "line %d: <ERROR> unexpected command: %s\n", lineCounter, name);
 		}
-		//Команду читаем. А имя зарезервировано?
+		//Нашли команду с n аргументами
+		else
+		{
+			//Ставим флаг
+			readingCommandLine = 1;
+			commandInfoInit(t, name);
+		}
+	}
+	//Находимся в режиме чтения команды
+	else
+	{
+		//И вдруг читаем еще команду
+		if (t != -1)
+		{
+			//Условно сбросили флаг
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> expected argument but recieved command\n", lineCounter);
+			//Снова подняли флаг и читаем
+			commandInfoInit(t, name);			
+		}
+		//Читаем имя регистра
 		else if (isRegisterName(name) == 1)
 		{
 			//Преобразуем в число и сохраним в аргументы
-			addOpDescArgument(argConvert(name));
+			numArgAnalyze(argConvert(name));
 		}
-		//Нет такого имени. Ловите ошибку.
+		//А такого случая быть не должно
 		else
 		{
-			errorCounter++;
-			fprintf(stderr, "line %d: <ERROR> wrong name recieved\n", lineCounter);
 			readingCommandLine = 0;
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> wrong symbolic name recieved: %s\n", lineCounter, name);
 		}
 	}
 }
