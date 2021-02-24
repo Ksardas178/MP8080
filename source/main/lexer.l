@@ -62,7 +62,7 @@ extern int lineCounter;
 <INITIAL>\)						{ return CLOSE; }
 <INITIAL><<						{ return SHL; 	}
 <INITIAL>>>						{ return SHR; 	}
-<INITIAL>\n						{ lineCounter++;}
+<INITIAL>[\n\r]+				{ lineCounter++;}
 <INITIAL>[ \t]+					{}
 <INITIAL>(.)	    			return yytext[0];
 %%

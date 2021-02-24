@@ -1,1 +1,2 @@
-line 3: <WARNING> too less arguments. Expected 3
+line 4: wrong register name recieved
+line 5: <ERROR> expected 3 argument(s)
