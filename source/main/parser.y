@@ -125,8 +125,10 @@ char stringBuffer[MSG_LENGTH];
 int readingCommandLine = 0;
 int inProgram = 0;
 int lineCounter = 1;
+int warningCounter = 0;
+int errorCounter = 0;
 int columnCounter = 1;
-enum OUTPUTMODE globalMode = M_CHECK;
+enum OUTPUTMODE globalMode = M_BINARY;
 
 //Предописания
 void printAnalyzeBuf();
@@ -936,6 +938,19 @@ void analyzeBufInit() {
 
 //Вывод буфера трансляции
 void printAnalyzeBuf() {
+	printf("\n");
+	if (errorCounter > 0) 
+	{
+		printf("\x1b[31;1mErrors: %d\n\x1b[0m", errorCounter);
+	}
+	else if (warningCounter > 0) 
+	{
+		printf("\x1b[33;1mWarnings: %d\n\x1b[0m", warningCounter);
+	} 
+	else
+	{
+		printf("\x1b[32;1mInput is correct\n\x1b[0m");
+	}
 	printf("\n\x1b[30;1mCode analysis results:\n\x1b[0m______________________________\n");
 	for (int i = 0; i < analyzeBuf.stored; i++)
 	{
@@ -947,23 +962,24 @@ void printAnalyzeBuf() {
 
 //Добавление числового аргумента в буфер операции
 void addOpDescArgument(int arg) {
-	//printf("line %d: called with arg %d\n", lineCounter, arg);
 	//Проверка на ожидаемое количество аргументов
 	const int expected = opDesc.expectedArgs;
 	if (opDesc.args >= expected)
 	{
-		printf("line %d: <ERROR> expected %d argument(s)\n", lineCounter, expected);
+		errorCounter++;
+		fprintf(stderr, "line %d: <ERROR> expected %d argument(s)\n", lineCounter, expected);
 	}
 	//Если аргумент отрицательный
 	else if (arg < 0)
 	{
-		printf("line %d: <ERROR> expected non negative argument\n", lineCounter);
+		errorCounter++;
+		fprintf(stderr, "line %d: <ERROR> expected non negative argument\n", lineCounter);
 	}
 	//Если получили двухбайтный аргумент
 	else if (arg >= 8)
 	{
-		//printf(">=8. Get %d\n", arg);
-		printf("line %d: <WARNING> argument adapted to match %d 8-bit value(s)\n", lineCounter, expected);
+		warningCounter++;
+		fprintf(stderr, "line %d: <WARNING> argument adapted to match %d 8-bit value(s)\n", lineCounter, expected);
 		addOpDescArgument(arg/8);
 		addOpDescArgument(arg%8);
 	}
@@ -986,7 +1002,8 @@ void addOpDescArgument(int arg) {
 				opDesc.arg[2] = arg;
 				break;
 			default:
-				printf("line %d: <ERROR> too much args expected\n", lineCounter);
+				errorCounter++;
+				fprintf(stderr, "line %d: <ERROR> too much args expected\n", lineCounter);
 				break;
 		}
 	}
@@ -994,13 +1011,15 @@ void addOpDescArgument(int arg) {
 
 //Добавление в описание команды числового аргумента
 void numArgAnalyze(int arg) {
+	//Встретили, пока читали команду?
 	if (readingCommandLine == 1)
 	{
 		addOpDescArgument(arg);
 	}
 	else
 	{
-		printf("line %d: <ERROR> unexpected numeric argument\n", lineCounter);
+		errorCounter++;
+		fprintf(stderr, "line %d: <ERROR> unexpected numeric argument\n", lineCounter);
 	}
 }
 
@@ -1134,7 +1153,8 @@ int argConvert(char * arg) {
 	}
 	else
 	{
-		printf("line %d: <ERROR>: unexpected argument\n", lineCounter);
+		errorCounter++;
+		fprintf(stderr, "line %d: <ERROR>: unexpected argument\n", lineCounter);
 		return -1;
 	}
 }
@@ -1175,13 +1195,14 @@ void operationAnalyze(char * name) {
 		//Команда есть такая?
 		if (t != -1)
 		{
+			//Есть. Инициализируем память и ставим флаг
 			commandInfoInit(t, name);
 			readingCommandLine = 1;
 		}
 		//Нет такой команды. Ошибка
 		else
 		{
-			printf("line %d: <ERROR> wrong command recieved\n", lineCounter);
+			fprintf(stderr, "line %d: wrong command recieved\n", lineCounter);
 		}
 	}
 	//Не все аргументы получили пока. А имя-то такое найдется?
@@ -1192,6 +1213,6 @@ void operationAnalyze(char * name) {
 	//Нет такого имени. Ловите ошибку.
 	else
 	{
-		printf("line %d: <ERROR> wrong register name recieved\n", lineCounter);
+		fprintf(stderr, "line %d: wrong register name recieved\n", lineCounter);
 	}
 }

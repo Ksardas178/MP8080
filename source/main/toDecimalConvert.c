@@ -3,6 +3,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+extern int lineCounter;
+extern int errorCounter;
+extern int warningCounter;
+
 int toDecimalConvert(int base, const char* sum) {
     int answer = 0;
     int power;
@@ -17,7 +21,8 @@ int toDecimalConvert(int base, const char* sum) {
                         answer += pow(base, power);
                         break;
                     default:
-                        printf("Error: Invalid digit.\n");
+						errorCounter++;
+                        fprintf(stderr, "line %d: <ERROR> Invalid digit.\n", lineCounter);
                         answer = -1;
                         break;
                 }
@@ -29,7 +34,8 @@ int toDecimalConvert(int base, const char* sum) {
             for (int i = strlen(sum) - 1; i >= 0; i--) {
                 int digit = (int)sum[i] - (int)('0');
                 if (digit > 7) {
-                    printf("Error: Invalid digit.\n");
+					errorCounter++;
+                    fprintf(stderr, "line %d: <ERROR> Invalid digit.\n", lineCounter);
                     answer = -1;
                     break;
                 }
@@ -84,14 +90,16 @@ int toDecimalConvert(int base, const char* sum) {
                     power++;
                 }
                 else {
-                    printf("Error: Invalid digit.\n");
+					errorCounter++;
+                    fprintf(stderr, "line %d: <ERROR> Invalid digit.\n", lineCounter);
                     answer = -1;
                     break;
                 }
             }
             break;
         default:
-            printf("Error: Invalid base.\n");
+			errorCounter++;
+            fprintf(stderr, "line %d: <ERROR> Invalid base.\n", lineCounter);
             answer = -1;
             break;
     }
