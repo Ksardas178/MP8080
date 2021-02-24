@@ -253,6 +253,11 @@ void storeBytesToAnalyzeByffer(int a[], int l, int base, int digits) {
 	}
 }
 
+//Создает число, соответствующее 1му аргументу операции
+int generateCommandNameCode(int a, int b, int c) {
+	return (a * 8 + b) * 8 + c;
+}
+
 //Внутренняя функция трансляции в двоичное представление
 void internalBinaryStore() {
 	const int base = 2;
@@ -264,612 +269,495 @@ void internalBinaryStore() {
 	int l;
 	if (strcmp(opDesc.opName, "MOV") == 0)
 	{
-		a[0] = 1;
-		a[1] = arg1;
-		a[2] = arg2;
-		l = 3;
+		a[0] = generateCommandNameCode(1, arg1, arg2);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "MVI") == 0)
 	{
-		a[0] = 0;
+		a[0] = generateCommandNameCode(0, arg1, 6);;
+		a[1] = arg2;
+		l = 2;
+	}
+	else if (strcmp(opDesc.opName, "LXI") == 0)
+	{
+		if (arg1 % 2 != 0)
+		{
+			printf("line %d: <WARNING> must be B, D, C or SP register specified\n", lineCounter);
+		}
+		
+		a[0] = generateCommandNameCode(0, arg1, 1);
+		a[1] = arg2;
+		a[2] = arg3;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "LDA") == 0)
+	{
+		a[0] = generateCommandNameCode(0, 7, 2);
 		a[1] = arg1;
 		a[2] = arg2;
 		l = 3;
 	}
-	else if (strcmp(opDesc.opName, "LXI") == 0)
-	{
-		a[0] = 0;
-		a[1] = arg1;
-		a[2] = 1;
-		a[3] = arg2;
-		a[4] = arg3;
-		l = 5;
-	}
-	else if (strcmp(opDesc.opName, "LDA") == 0)
-	{
-		a[0] = 0;
-		a[1] = 7;
-		a[2] = 2;
-		a[3] = arg1;
-		a[4] = arg2;
-		l = 5;
-	}
 	else if (strcmp(opDesc.opName, "LDAX") == 0)
 	{
-		a[0] = 0;
-		a[1] = arg1+1; //B, D codes + 1
-		a[2] = 2;
-		l = 3;
+		if (arg1 != 0 && arg1 != 2)
+		{
+			printf("line %d: <WARNING> must be B or D register specified\n", lineCounter);
+		}
+		
+		a[0] = generateCommandNameCode(0, arg1+1, 2);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "STA") == 0)
-	{
-		a[0] = 0;
-		a[1] = 1;
-		a[2] = 2;
-		a[3] = arg1;
-		a[4] = arg2;
-		l = 5;
+	{	
+		a[0] = generateCommandNameCode(0, 6, 2);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "STAX") == 0)
 	{
-		a[0] = 0;
-		a[1] = arg1;
-		a[2] = 2;
-		l = 3;
+		if (arg1 != 0 && arg1 != 2)
+		{
+			printf("line %d: <WARNING> must be B or D register specified\n", lineCounter);
+		}
+		
+		a[0] = generateCommandNameCode(0, arg1, 2);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "IN") == 0)
 	{
-		a[0] = 3;
-		a[1] = 3;
-		a[2] = 3;
-		a[3] = arg1;
-		l = 4;
+		a[0] = generateCommandNameCode(3, 3, 3);
+		a[1] = arg1;
+		l = 2;
 	}
 	else if (strcmp(opDesc.opName, "OUT") == 0)
 	{
-		a[0] = 3;
-		a[1] = 2;
-		a[2] = 3;
-		a[3] = arg1;
-		l = 4;
+		a[0] = generateCommandNameCode(3, 2, 3);
+		a[1] = arg1;
+		l = 2;
 	}
 	else if (strcmp(opDesc.opName, "XCHG") == 0)
 	{
-		a[0] = 3;
-		a[1] = 5;
-		a[2] = 3;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 5, 3);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "XTHL") == 0)
 	{
-		a[0] = 3;
-		a[1] = 4;
-		a[2] = 3;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 4, 3);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "LHLD") == 0)
 	{
-		a[0] = 0;
-		a[1] = 5;
-		a[2] = 2;
-		a[3] = arg1;
-		a[4] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(0, 5, 2);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "SHLD") == 0)
 	{
-		a[0] = 0;
-		a[1] = 4;
-		a[2] = 2;
-		a[3] = arg1;
-		a[4] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(0, 4, 2);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "SPHL") == 0)
 	{
-		a[0] = 3;
-		a[1] = 7;
-		a[2] = 1;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 7, 1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "PCHL") == 0)
 	{
-		a[0] = 3;
-		a[1] = 5;
-		a[2] = 1;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 5, 1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "PUSH") == 0)
 	{
-		a[0] = 3;
-		a[1] = arg1;
-		a[2] = 5;
-		l = 3;
+		if (arg1 % 2 != 0)
+		{
+			printf("line %d: <WARNING> must be B, D, H or PSW register specified\n", lineCounter);
+		}
+		
+		a[0] = generateCommandNameCode(3, arg1, 5);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "POP") == 0)
 	{
-		a[0] = 3;
-		a[1] = arg1;
-		a[2] = 1;
-		l = 3;
+		if (arg1 % 2 != 0)
+		{
+			printf("line %d: <WARNING> must be B, D, H or PSW register specified\n", lineCounter);
+		}
+		
+		a[0] = generateCommandNameCode(3, arg1, 1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "JMP") == 0)
 	{
-		a[0] = 3;
-		a[1] = 0;
-		a[2] = 3;
-		a[3] = arg1;
-		a[4] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 0, 3);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "CALL") == 0)
 	{
-		a[0] = 3;
-		a[1] = 1;
-		a[2] = 5;
-		a[3] = arg1;
-		a[4] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 1, 5);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "RET") == 0)
 	{
-		a[0] = 3;
-		a[1] = 1;
-		a[2] = 1;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 1, 1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "PCHL") == 0)
 	{
-		a[0] = 3;
-		a[1] = 5;
-		a[2] = 1;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 5, 1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RST") == 0)
 	{
-		a[0] = 3;
-		a[1] = arg1;
-		a[2] = 7;
-		l = 3;
+		a[0] = generateCommandNameCode(3, arg1, 7);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "JNZ") == 0)
 	{
-		a[0] = 3;
-		a[1] = 0;
-		a[2] = 2;
-		a[3] = arg1;
-		a[4] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 0, 2);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "JZ") == 0)
 	{
-		a[0] = 3;
-		a[1] = 1;
-		a[2] = 2;
-		a[3] = arg1;
-		a[4] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 1, 2);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "JNC") == 0)
 	{
-		a[0] = 3;
-		a[1] = 2;
-		a[2] = 2;
-		a[3] = arg1;
-		a[4] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 2, 2);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "JC") == 0)
 	{
-		a[0] = 3;
-		a[1] = 3;
-		a[2] = 2;
-		a[3] = arg1;
-		a[4] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 3, 2);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "JPO") == 0)
 	{
-		a[0] = 3;
-		a[1] = 4;
-		a[2] = 2;
-		a[3] = arg1;
-		a[4] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 4, 2);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "JPE") == 0)
 	{
-		a[0] = 3;
-		a[1] = 5;
-		a[2] = 2;
-		a[4] = arg1;
-		a[5] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 5, 2);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "JP") == 0)
 	{
-		a[0] = 3;
-		a[1] = 6;
-		a[2] = 2;
-		a[4] = arg1;
-		a[5] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 6, 2);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "JM") == 0)
 	{
-		a[0] = 3;
-		a[1] = 7;
-		a[2] = 2;
-		a[4] = arg1;
-		a[5] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 7, 2);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "CNZ") == 0)
 	{
-		a[0] = 3;
-		a[1] = 0;
-		a[2] = 4;
-		a[4] = arg1;
-		a[5] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 0, 4);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "CZ") == 0)
 	{
-		a[0] = 3;
-		a[1] = 1;
-		a[2] = 4;
-		a[4] = arg1;
-		a[5] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 1, 4);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "CNC") == 0)
 	{
-		a[0] = 3;
-		a[1] = 2;
-		a[2] = 4;
-		a[4] = arg1;
-		a[5] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 2, 4);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "CC") == 0)
 	{
-		a[0] = 3;
-		a[1] = 3;
-		a[2] = 4;
-		a[4] = arg1;
-		a[5] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 3, 4);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "CPO") == 0)
 	{
-		a[0] = 3;
-		a[1] = 4;
-		a[2] = 4;
-		a[4] = arg1;
-		a[5] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 4, 4);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "CPE") == 0)
 	{
-		a[0] = 3;
-		a[1] = 5;
-		a[2] = 4;
-		a[4] = arg1;
-		a[5] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 5, 4);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "CP") == 0)
 	{
-		a[0] = 3;
-		a[1] = 6;
-		a[2] = 4;
-		a[4] = arg1;
-		a[5] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 6, 4);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "CM") == 0)
 	{
-		a[0] = 3;
-		a[1] = 7;
-		a[2] = 4;
-		a[4] = arg1;
-		a[5] = arg2;
-		l = 5;
+		a[0] = generateCommandNameCode(3, 7, 4);
+		a[1] = arg1;
+		a[2] = arg2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "RNZ") == 0)
 	{
-		a[0] = 3;
-		a[1] = 0;
-		a[2] = 0;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 0, 0);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RZ") == 0)
 	{
-		a[0] = 3;
-		a[1] = 1;
-		a[2] = 0;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 1, 0);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RNC") == 0)
 	{
-		a[0] = 3;
-		a[1] = 2;
-		a[2] = 0;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 2, 0);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RC") == 0)
 	{
-		a[0] = 3;
-		a[1] = 3;
-		a[2] = 0;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 3, 0);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RPO") == 0)
 	{
-		a[0] = 3;
-		a[1] = 4;
-		a[2] = 0;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 4, 0);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RPE") == 0)
 	{
-		a[0] = 3;
-		a[1] = 5;
-		a[2] = 0;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 5, 0);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RP") == 0)
 	{
-		a[0] = 3;
-		a[1] = 6;
-		a[2] = 0;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 6, 0);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RM") == 0)
 	{
-		a[0] = 3;
-		a[1] = 7;
-		a[2] = 0;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 7, 0);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "EI") == 0)
 	{
-		a[0] = 3;
-		a[1] = 7;
-		a[2] = 3;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 7, 3);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "DI") == 0)
 	{
-		a[0] = 3;
-		a[1] = 6;
-		a[2] = 3;
-		l = 3;
+		a[0] = generateCommandNameCode(3, 6, 3);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "NOP") == 0)
 	{
-		a[0] = 0;
-		a[1] = 0;
-		a[2] = 0;
-		l = 3;
+		a[0] = generateCommandNameCode(0, 0, 0);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "HLT") == 0)
 	{
-		a[0] = 1;
-		a[1] = 6;
-		a[2] = 6;
-		l = 3;
+		a[0] = generateCommandNameCode(1, 6, 6);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "ADD") == 0)
 	{
-		a[0] = 2;
-		a[1] = 0;
-		a[2] = arg1;
-		l = 3;
+		a[0] = generateCommandNameCode(2, 0, arg1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "ADI") == 0)
 	{
-		a[0] = 3;
-		a[1] = 0;
-		a[2] = 6;
-		a[3] = arg1;
-		l = 4;
+		a[0] = generateCommandNameCode(3, 0, 6);
+		a[1] = arg1;
+		l = 2;
 	}
 	else if (strcmp(opDesc.opName, "ADC") == 0)
 	{
-		a[0] = 2;
-		a[1] = 1;
-		a[2] = arg1;
-		l = 3;
+		a[0] = generateCommandNameCode(2, 1, arg1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "ACI") == 0)
 	{
-		a[0] = 3;
-		a[1] = 1;
-		a[2] = 6;
-		a[4] = arg1;
-		l = 4;
+		a[0] = generateCommandNameCode(3, 1, 6);
+		a[1] = arg1;
+		l = 2;
 	}
 	else if (strcmp(opDesc.opName, "SUB") == 0)
 	{
-		a[0] = 2;
-		a[1] = 2;
-		a[2] = arg1;
-		l = 3;
+		a[0] = generateCommandNameCode(2, 2, arg1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "SUI") == 0)
 	{
-		a[0] = 3;
-		a[1] = 2;
-		a[2] = 6;
-		a[3] = arg1;
-		l = 4;
+		a[0] = generateCommandNameCode(3, 2, 6);
+		a[1] = arg1;
+		l = 2;
 	}
 	else if (strcmp(opDesc.opName, "SBB") == 0)
 	{
-		a[0] = 2;
-		a[1] = 3;
-		a[2] = arg1;
-		l = 3;
+		a[0] = generateCommandNameCode(2, 3, arg1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "SBI") == 0)
 	{
-		a[0] = 3;
-		a[1] = 3;
-		a[2] = 6;
-		a[3] = arg1;
-		l = 4;
+		a[0] = generateCommandNameCode(3, 3, 6);
+		a[1] = arg1;
+		l = 2;
 	}
 	else if (strcmp(opDesc.opName, "CMP") == 0)
 	{
-		a[0] = 2;
-		a[1] = 7;
-		a[2] = arg1;
-		l = 3;
+		a[0] = generateCommandNameCode(2, 7, arg1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "CPI") == 0)
 	{
-		a[0] = 3;
-		a[1] = 7;
-		a[2] = 6;
-		a[3] = arg1;
-		l = 4;
+		a[0] = generateCommandNameCode(3, 7, 6);
+		a[1] = arg1;
+		l = 2;
 	}
 	else if (strcmp(opDesc.opName, "INR") == 0)
 	{
-		a[0] = 0;
-		a[1] = arg1;
-		a[2] = 4;
-		l = 3;
+		a[0] = generateCommandNameCode(0, arg1, 4);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "INX") == 0)
 	{
-		a[0] = 0;
-		a[1] = arg1;
-		a[2] = 3;
-		l = 3;
+		if (arg1 % 2 != 0)
+		{
+			printf("line %d: <WARNING> must be B, D, C or SP register specified\n", lineCounter);
+		}
+		
+		a[0] = generateCommandNameCode(0, arg1, 3);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "DCR") == 0)
 	{
-		a[0] = 0;
-		a[1] = arg1;
-		a[2] = 5;
-		l = 3;
+		a[0] = generateCommandNameCode(0, arg1, 5);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "DCX") == 0)
 	{
-		a[0] = 0;
-		a[1] = arg1 + 1;//reg name + 1
-		a[2] = 3;
-		l = 3;
+		if (arg1 % 2 != 0)
+		{
+			printf("line %d: <WARNING> must be B, D, C or SP register specified\n", lineCounter);
+		}
+		
+		a[0] = generateCommandNameCode(0, arg1+1, 3);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "DAD") == 0)
 	{
-		a[0] = 0;
-		a[1] = arg1 + 1;//reg name + 1
-		a[2] = 1;
-		l = 3;
+		if (arg1 % 2 != 0)
+		{
+			printf("line %d: <WARNING> must be B, D, C or SP register specified\n", lineCounter);
+		}
+		
+		a[0] = generateCommandNameCode(0, arg1+1, 1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "DAA") == 0)
 	{
-		a[0] = 0;
-		a[1] = 4;
-		a[2] = 7;
-		l = 3;
+		a[0] = generateCommandNameCode(0, 4, 7);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "ANA") == 0)
 	{
-		a[0] = 2;
-		a[1] = 4;
-		a[2] = arg1;
-		l = 3;
+		a[0] = generateCommandNameCode(2, 4, arg1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "ANI") == 0)
 	{
-		a[0] = 3;
-		a[1] = 4;
-		a[2] = 6;
-		a[3] = arg1;
-		l = 4;
+		a[0] = generateCommandNameCode(3, 4, 6);	
+		a[1] = arg1;
+		l = 2;
 	}
 	else if (strcmp(opDesc.opName, "XRA") == 0)
 	{
-		a[0] = 2;
-		a[1] = 5;
-		a[2] = arg1;
-		l = 3;
+		a[0] = generateCommandNameCode(2, 5, arg1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "XRI") == 0)
-	{
-		a[0] = 3;
-		a[1] = 5;
-		a[2] = 6;
-		a[3] = arg1;
-		l = 4;
+	{		
+		a[0] = generateCommandNameCode(3, 5, 6);
+		a[1] = arg1;
+		l = 2;
 	}
 	else if (strcmp(opDesc.opName, "ORA") == 0)
 	{
-		a[0] = 2;
-		a[1] = 6;
-		a[2] = arg1;
-		l = 3;
+		a[0] = generateCommandNameCode(2, 6, arg1);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "ORI") == 0)
 	{
-		a[0] = 3;
-		a[1] = 6;
-		a[2] = 6;
-		a[3] = arg1;
-		l = 4;
+		a[0] = generateCommandNameCode(3, 6, 6);
+		a[1] = arg1;
+		l = 2;
 	}
 	else if (strcmp(opDesc.opName, "CMA") == 0)
 	{
-		a[0] = 0;
-		a[1] = 5;
-		a[2] = 7;
-		l = 3;
+		a[0] = generateCommandNameCode(0, 5, 7);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RLC") == 0)
 	{
-		a[0] = 0;
-		a[1] = 0;
-		a[2] = 7;
-		l = 3;
+		a[0] = generateCommandNameCode(0, 0, 7);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RRC") == 0)
 	{
-		a[0] = 0;
-		a[1] = 1;
-		a[2] = 7;
-		l = 3;
+		a[0] = generateCommandNameCode(0, 1, 7);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RAL") == 0)
 	{
-		a[0] = 0;
-		a[1] = 2;
-		a[2] = 7;
-		l = 3;
+		a[0] = generateCommandNameCode(0, 2, 7);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "RAR") == 0)
 	{
-		a[0] = 0;
-		a[1] = 3;
-		a[2] = 7;
-		l = 3;
+		a[0] = generateCommandNameCode(0, 3, 7);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "STC") == 0)
 	{
-		a[0] = 0;
-		a[1] = 6;
-		a[2] = 7;
-		l = 3;
+		a[0] = generateCommandNameCode(0, 6, 7);
+		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "CMC") == 0)
 	{
-		a[0] = 0;
-		a[1] = 7;
-		a[2] = 7;
-		l = 3;
+		a[0] = generateCommandNameCode(0, 7, 7);
+		l = 1;
 	}
 	storeBytesToAnalyzeByffer(a, l, base, digits);
 }
@@ -1097,11 +985,11 @@ int isCommandName(char * arg) {
 	int result = -1;
 	//Цикл по возможному количеству арг-в
 	for (int i = 0; i <= MAX_ARGS; i++)
-	if (isNArgCommand(arg, i))
-	{
-		found++;
-		result = i;
-	}
+		if (isNArgCommand(arg, i))
+		{
+			found++;
+			result = i;
+		}
 	if (found > 1)
 	{
 		printf ("line %d: <INTERNAL_ERROR> command duplicates in command list\n", lineCounter);

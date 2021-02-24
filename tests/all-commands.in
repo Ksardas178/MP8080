@@ -1,0 +1,15 @@
+MOV B C
+MOV M D
+MOV D M
+
+MVI D 2
+MVI M 4
+
+LXI B 8 13
+LXI D 16 28
+LXI H 32 34
+LXI SP 63 64
+
+SUI 69
+
+//TODO: write all commands from table
