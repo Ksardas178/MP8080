@@ -1,20 +1,9 @@
-initialized
-initialized
-line 2: <ERROR> wrong register name recieved
-line 3: <WARNING> argument adapted to match 3 8-bit value(s)
-line 3: <ERROR> expected 3 argument(s)
-line 2: get cmd with 3 args (1, 4, -204348641)
-initialized
-line 4: <WARNING> argument adapted to match 3 8-bit value(s)
-line 4: <ERROR> wrong register name recieved
-line 4: <WARNING> argument adapted to match 3 8-bit value(s)
-line 4: <ERROR> expected 3 argument(s)
 
+[33;1mWarnings: 3
+[0m
 [30;1mCode analysis results:
 [0m______________________________
-00000000: 00000001
-00000001: 00000001
-00000010: 00000100
-00000011: 00000001
-00000100: 00000111
-00000101: 00000001
+00000000: MOV 1 4
+00000001: MOV 5 6
+00000010: MOV 7 1
+00000011: MOV 1 7

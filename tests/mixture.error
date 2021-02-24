@@ -1,0 +1,19 @@
+line 2: <WARNING> argument adapted to match 2 8-bit value(s)
+line 4: <WARNING> too less arguments. Expected 3
+line 5: <ERROR> wrong name recieved
+line 5: <ERROR> unexpected identifier: Z
+line 5: <ERROR> unexpected identifier: Z
+line 7: <ERROR> unexpected identifier: TEST
+line 7: <ERROR> unexpected identifier: T
+line 13: <ERROR> wrong name recieved
+line 14: <ERROR> unexpected numeric argument
+line 24: <WARNING> argument adapted to match 2 8-bit value(s)
+line 24: <WARNING> argument adapted to match 2 8-bit value(s)
+line 24: <WARNING> argument adapted to match 2 8-bit value(s)
+line 24: <ERROR> wrong name recieved
+line 24: <ERROR> unexpected numeric argument
+line 25: <ERROR> unexpected numeric argument
+line 25: <ERROR> unexpected identifier: FTR
+line 25: <ERROR> unexpected numeric argument
+line 26: <ERROR> unexpected numeric argument
+line 29: <ERROR> too much arguments. Expected 1

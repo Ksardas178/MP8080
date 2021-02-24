@@ -124,17 +124,17 @@ char stringBuffer[MSG_LENGTH];
 //Флаги и глобальные переменные
 int readingCommandLine = 0;
 int inProgram = 0;
-int lineCounter = 1;
+int lineCounter = 0;
 int warningCounter = 0;
 int errorCounter = 0;
 int columnCounter = 1;
-enum OUTPUTMODE globalMode = M_BINARY;
+enum OUTPUTMODE globalMode = M_CHECK;
 
 //Предописания
 void printAnalyzeBuf();
 void operationAnalyze(char * name);
 void numArgAnalyze(int arg);
-void getCommand(enum OUTPUTMODE mode);
+void getCommand();
 int toDecimalConvert(int base, const char* sum);
 	
 %}
@@ -170,7 +170,7 @@ int toDecimalConvert(int base, const char* sum);
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-_text	: text	{ getCommand(globalMode); printAnalyzeBuf(); }
+_text	: text	{ getCommand(); printAnalyzeBuf(); }
 
 text: line text	{}
 	| line		{}
@@ -227,7 +227,7 @@ void toBaseConvert(int num, int base, int digits) {
 }
 
 //Сохранение строки в буфер с транслированным кодом
-void storeAnalizeBuf(char * msg) {
+void storeAnalyzeBuf(char * msg) {
 	analyzeBuf.stored++;
 	if (analyzeBuf.stored > analyzeBuf.size)
 	{
@@ -238,18 +238,17 @@ void storeAnalizeBuf(char * msg) {
 }
 
 //Сохранение числа в заданной СС в буфер трансляции
-void storeNumToAnalizeBuffer(int num, int base, int digits){
+void storeNumToAnalyzeBuffer(int num, int base, int digits){
 	char temp[MSG_LENGTH];
-	//int number = 
 	toBaseConvert(num, base, digits);
 	sprintf(temp, "%s\n", stringBuffer);
-	storeAnalizeBuf(temp);
+	storeAnalyzeBuf(temp);
 }
 
-void storeBytesToAnalyzeByffer(int a[], int l, int base, int digits) {
+void storeBytesToAnalyzeBuffer(int a[], int l, int base, int digits) {
 	for (int i = 0; i < l; i++)
 	{
-		storeNumToAnalizeBuffer(a[i], base, digits);
+		storeNumToAnalyzeBuffer(a[i], base, digits);
 	}
 }
 
@@ -871,29 +870,49 @@ void internalBinaryStore() {
 		a[2] = 7;
 		l = 3;
 	}
-	storeBytesToAnalyzeByffer(a, l, base, digits);
+	storeBytesToAnalyzeBuffer(a, l, base, digits);
+}
+
+void checkArguments() {
+	//Аргументов больше, чем ожидали?
+	if (opDesc.args > opDesc.expectedArgs)
+	{
+		errorCounter++;
+		fprintf(stderr, "line %d: <ERROR> too much arguments. Expected %d\n", lineCounter, opDesc.expectedArgs);
+	} 
+	//Меньше, чем ожидали?
+	else if (opDesc.args < opDesc.expectedArgs)
+	{
+		warningCounter++;
+		fprintf(stderr, "line %d: <WARNING> too less arguments. Expected %d\n", lineCounter, opDesc.expectedArgs);
+	}
 }
 
 //Запись операции в буфер трансляции
-void getCommand(enum OUTPUTMODE mode) {
+void getCommand() {
 	readingCommandLine = 0;
+	checkArguments();
 	char temp[MSG_LENGTH];
-	switch (mode)
+	switch (globalMode)
 	{
 		case M_CHECK:
 			switch (opDesc.expectedArgs)
 			{
+				case 0:
+					sprintf(temp, "%s\n", opDesc.opName);
+					storeAnalyzeBuf(temp);
+					break;
 				case 1:
 					sprintf(temp, "%s %d\n", opDesc.opName, opDesc.arg[0]);
-					storeAnalizeBuf(temp);
+					storeAnalyzeBuf(temp);
 					break;
 				case 2:
 					sprintf(temp, "%s %d %d\n", opDesc.opName, opDesc.arg[0], opDesc.arg[1]);
-					storeAnalizeBuf(temp);
+					storeAnalyzeBuf(temp);
 					break;
 				case 3:
 					sprintf(temp, "%s %d %d %d\n", opDesc.opName, opDesc.arg[0], opDesc.arg[1], opDesc.arg[2]);
-					storeAnalizeBuf(temp);
+					storeAnalyzeBuf(temp);
 					break;
 				default:
 					printf("line %d: <INTERNAL_ERROR> too much args\n", lineCounter);
@@ -915,6 +934,7 @@ void getCommand(enum OUTPUTMODE mode) {
 	}
 }
 
+//Инициализация информации об анализируемой команде
 void commandInfoInit(int expected, char * name) {
 	//printf ("initialized\n");
 	opDesc.expectedArgs = expected;
@@ -943,11 +963,11 @@ void printAnalyzeBuf() {
 	{
 		printf("\x1b[31;1mErrors: %d\n\x1b[0m", errorCounter);
 	}
-	else if (warningCounter > 0) 
+	if (warningCounter > 0) 
 	{
 		printf("\x1b[33;1mWarnings: %d\n\x1b[0m", warningCounter);
 	} 
-	else
+	else if (errorCounter > 0)
 	{
 		printf("\x1b[32;1mInput is correct\n\x1b[0m");
 	}
@@ -964,13 +984,8 @@ void printAnalyzeBuf() {
 void addOpDescArgument(int arg) {
 	//Проверка на ожидаемое количество аргументов
 	const int expected = opDesc.expectedArgs;
-	if (opDesc.args >= expected)
-	{
-		errorCounter++;
-		fprintf(stderr, "line %d: <ERROR> expected %d argument(s)\n", lineCounter, expected);
-	}
 	//Если аргумент отрицательный
-	else if (arg < 0)
+	if (arg < 0)
 	{
 		errorCounter++;
 		fprintf(stderr, "line %d: <ERROR> expected non negative argument\n", lineCounter);
@@ -1002,8 +1017,7 @@ void addOpDescArgument(int arg) {
 				opDesc.arg[2] = arg;
 				break;
 			default:
-				errorCounter++;
-				fprintf(stderr, "line %d: <ERROR> too much args expected\n", lineCounter);
+				printf("line %d: <INTERNAL_ERROR> too much args expected\n", lineCounter);
 				break;
 		}
 	}
@@ -1176,43 +1190,47 @@ int isRegisterName(char * arg) {
 
 //Инициализация переменной под новую операцию
 void operationAnalyze(char * name) {
+	int t = isCommandName(name);
 	//Только вошли в программу?
 	if (inProgram == 0)
 	{
 		analyzeBufInit();
 		inProgram = 1;
 	}
-	//Уже читаем команду? А аргументов не много захапали?
-	if (readingCommandLine == 1 && opDesc.args >= opDesc.expectedArgs) 
-	{
-		//Много. Записываем команду (внутри обнуляется флаг)
-		getCommand(globalMode);
-	}	
-	//Проверяем, читаем уже команду или пока нет
-	if (readingCommandLine == 0)
-	{
-		int t = isCommandName(name);
-		//Команда есть такая?
-		if (t != -1)
+	//Встретили команду?
+	if (t != -1) 
+	{		
+		//До этого читали другую команду?
+		if (readingCommandLine == 1) 
 		{
-			//Есть. Инициализируем память и ставим флаг
-			commandInfoInit(t, name);
-			readingCommandLine = 1;
+			//Сохраним прочитанную
+			getCommand();
 		}
-		//Нет такой команды. Ошибка
-		else
-		{
-			fprintf(stderr, "line %d: wrong command recieved\n", lineCounter);
-		}
-	}
-	//Не все аргументы получили пока. А имя-то такое найдется?
-	else if (isRegisterName(name) == 1)
-	{
-		addOpDescArgument(argConvert(name));
-	}
-	//Нет такого имени. Ловите ошибку.
+		//Инициализируем память под новую команду и ставим флаг
+		commandInfoInit(t, name);
+		readingCommandLine = 1;
+	} 
+	//Не встретили команду
 	else
 	{
-		fprintf(stderr, "line %d: wrong register name recieved\n", lineCounter);
+		//А мы вообще команду сейчас читаем?
+		if (readingCommandLine == 0)
+		{
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> unexpected identifier: %s\n", lineCounter, name);
+		}
+		//Команду читаем. А имя зарезервировано?
+		else if (isRegisterName(name) == 1)
+		{
+			//Преобразуем в число и сохраним в аргументы
+			addOpDescArgument(argConvert(name));
+		}
+		//Нет такого имени. Ловите ошибку.
+		else
+		{
+			errorCounter++;
+			fprintf(stderr, "line %d: <ERROR> wrong name recieved\n", lineCounter);
+			readingCommandLine = 0;
+		}
 	}
 }
