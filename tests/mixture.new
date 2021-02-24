@@ -1,46 +1,80 @@
-line 3: <WARNING> argument adapted to match 2 8-bit value(s)
+initialized
+initialized
+line 3: <WARNING> argument adapted to match 3 8-bit value(s)
+line 3: <ERROR> wrong register name recieved
+line 2: get cmd with 3 args (5, 6, -1175936217)
+line 3: <ERROR> wrong command recieved
+initialized
+line 5: <ERROR> wrong register name recieved
+line 4: get cmd with 3 args (0, 4, -1175936191)
+line 5: <ERROR> wrong command recieved
 line 6: <ERROR> wrong command recieved
 line 6: <ERROR> wrong command recieved
 line 6: <ERROR> wrong command recieved
 line 8: <ERROR> wrong command recieved
 line 8: <ERROR> wrong command recieved
+initialized
 line 14: <ERROR> wrong register name recieved
-line 15: <WARNING> argument adapted to match 2 8-bit value(s)
-line 15: <WARNING> argument adapted to match 2 8-bit value(s)
-line 15: <WARNING> argument adapted to match 2 8-bit value(s)
-line 15: <ERROR> expected 2 argument(s)
-line 15: <ERROR> expected 2 argument(s)
+line 15: <WARNING> argument adapted to match 3 8-bit value(s)
+line 15: <WARNING> argument adapted to match 3 8-bit value(s)
+line 15: <WARNING> argument adapted to match 3 8-bit value(s)
+line 15: <ERROR> expected 3 argument(s)
+line 14: get cmd with 3 args (1, 4, -1175936085)
+initialized
 line 17: <ERROR> wrong register name recieved
-line 17: <ERROR> wrong command recieved
-line 25: <WARNING> argument adapted to match 2 8-bit value(s)
-line 25: <WARNING> argument adapted to match 2 8-bit value(s)
-line 25: <WARNING> argument adapted to match 2 8-bit value(s)
-line 25: <ERROR> expected 2 argument(s)
-line 25: <ERROR> expected 2 argument(s)
+line 19: get cmd with 3 args (7, 0, -1175936033)
+initialized
+line 21: <ERROR> wrong register name recieved
+line 25: <WARNING> argument adapted to match 3 8-bit value(s)
+line 25: <WARNING> argument adapted to match 3 8-bit value(s)
+line 25: <WARNING> argument adapted to match 3 8-bit value(s)
+line 25: <ERROR> expected 3 argument(s)
+line 25: <ERROR> expected 3 argument(s)
+line 25: <ERROR> expected 3 argument(s)
+line 24: get cmd with 3 args (2, 3, -1175936005)
 line 25: <ERROR> wrong command recieved
 line 25: <ERROR> unexpected numeric argument
 line 26: <ERROR> unexpected numeric argument
 line 26: <ERROR> wrong command recieved
 line 26: <ERROR> unexpected numeric argument
 line 27: <ERROR> unexpected numeric argument
+initialized
 line 28: <ERROR> wrong register name recieved
+line 29: <ERROR> wrong register name recieved
+line 28: get cmd with 3 args (6, 7, -1175935955)
 line 29: <ERROR> wrong command recieved
 line 29: <ERROR> wrong command recieved
 line 29: <ERROR> wrong command recieved
 line 29: <ERROR> wrong command recieved
 line 29: <ERROR> wrong command recieved
 line 29: <ERROR> wrong command recieved
+line 29: <ERROR> wrong command recieved
+initialized
 
 [30;1mCode analysis results:
 [0m______________________________
-00000000: MVI 5 6
-00000001: MOV 0 4
-00000010: LXI 0 4
-00000011: MVI 0 4
-00000100: XCHG 1 4
-00000101: LDAX 7 0
-00000110: MVI 2 3
-00000111: MOV 1 0
-00001000: IN 6 7
-00001001: IN 6 6
-00001010: OUT 0 6
+00000000: 00000000
+00000001: 00000101
+00000010: 00000110
+00000011: 00000000
+00000100: 00000000
+00000101: 00000001
+00000110: 00000100
+00000111: 00000000
+00001000: 00000011
+00001001: 00000101
+00001010: 00000011
+00001011: 00000000
+00001100: 00001000
+00001101: 00000010
+00001110: 00000000
+00001111: 00000010
+00010000: 00000011
+00010001: 00000011
+00010010: 00000011
+00010011: 00000011
+00010100: 00000110
+00010101: 00000011
+00010110: 00000010
+00010111: 00000011
+00011000: 00000000

@@ -4,7 +4,7 @@ line 2: <WARNING> argument adapted to match 3 8-bit value(s)
 line 2: <ERROR> wrong register name recieved
 line 3: <WARNING> argument adapted to match 3 8-bit value(s)
 line 3: <ERROR> expected 3 argument(s)
-line 2: get cmd with 3 args (2, 7, -929930467)
+line 2: get cmd with 3 args (2, 7, 729453341)
 initialized
 line 3: <WARNING> argument adapted to match 3 8-bit value(s)
 

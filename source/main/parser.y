@@ -113,8 +113,7 @@ typedef struct {
 	int expectedArgs;
 	int args;
 	char opName[10];
-	int	arg1;
-	int arg2;
+	int	arg[MAX_ARGS];
 } operationDescription;
 
 //Информация об анализируемой операции
@@ -127,7 +126,7 @@ int readingCommandLine = 0;
 int inProgram = 0;
 int lineCounter = 1;
 int columnCounter = 1;
-enum OUTPUTMODE globalMode = M_BINARY;
+enum OUTPUTMODE globalMode = M_CHECK;
 
 //Предописания
 void printAnalyzeBuf();
@@ -239,12 +238,13 @@ void storeAnalizeBuf(char * msg) {
 //Сохранение числа в заданной СС в буфер трансляции
 void storeNumToAnalizeBuffer(int num, int base, int digits){
 	char temp[MSG_LENGTH];
+	//int number = 
 	toBaseConvert(num, base, digits);
 	sprintf(temp, "%s\n", stringBuffer);
 	storeAnalizeBuf(temp);
 }
 
-void storeBytesToAnalyzeByffer(int * a[], int l, int base, int digits) {
+void storeBytesToAnalyzeByffer(int a[], int l, int base, int digits) {
 	for (int i = 0; i < l; i++)
 	{
 		storeNumToAnalizeBuffer(a[i], base, digits);
@@ -255,9 +255,10 @@ void storeBytesToAnalyzeByffer(int * a[], int l, int base, int digits) {
 void internalBinaryStore() {
 	const int base = 2;
 	const int digits = 8;
-	const int arg1 = opDesc.arg1;
-	const int arg2 = opDesc.arg2;
-	int * a[10];
+	const int arg1 = opDesc.arg[0];
+	const int arg2 = opDesc.arg[1];
+	const int arg3 = opDesc.arg[2];
+	int a[10];
 	int l;
 	if (strcmp(opDesc.opName, "MOV") == 0)
 	{
@@ -275,23 +276,598 @@ void internalBinaryStore() {
 	}
 	else if (strcmp(opDesc.opName, "LXI") == 0)
 	{
-		
+		a[0] = 0;
+		a[1] = arg1;
+		a[2] = 1;
+		a[3] = arg2;
+		a[4] = arg3;
+		l = 5;
 	}
 	else if (strcmp(opDesc.opName, "LDA") == 0)
 	{
-
+		a[0] = 0;
+		a[1] = 7;
+		a[2] = 2;
+		a[3] = arg1;
+		a[4] = arg2;
+		l = 5;
 	}
 	else if (strcmp(opDesc.opName, "LDAX") == 0)
 	{
-
+		a[0] = 0;
+		a[1] = arg1+1; //B, D codes + 1
+		a[2] = 2;
+		l = 3;
 	}
 	else if (strcmp(opDesc.opName, "STA") == 0)
 	{
-
+		a[0] = 0;
+		a[1] = 1;
+		a[2] = 2;
+		a[3] = arg1;
+		a[4] = arg2;
+		l = 5;
 	}
 	else if (strcmp(opDesc.opName, "STAX") == 0)
 	{
-
+		a[0] = 0;
+		a[1] = arg1;
+		a[2] = 2;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "IN") == 0)
+	{
+		a[0] = 3;
+		a[1] = 3;
+		a[2] = 3;
+		a[3] = arg1;
+		l = 4;
+	}
+	else if (strcmp(opDesc.opName, "OUT") == 0)
+	{
+		a[0] = 3;
+		a[1] = 2;
+		a[2] = 3;
+		a[3] = arg1;
+		l = 4;
+	}
+	else if (strcmp(opDesc.opName, "XCHG") == 0)
+	{
+		a[0] = 3;
+		a[1] = 5;
+		a[2] = 3;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "XTHL") == 0)
+	{
+		a[0] = 3;
+		a[1] = 4;
+		a[2] = 3;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "LHLD") == 0)
+	{
+		a[0] = 0;
+		a[1] = 5;
+		a[2] = 2;
+		a[3] = arg1;
+		a[4] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "SHLD") == 0)
+	{
+		a[0] = 0;
+		a[1] = 4;
+		a[2] = 2;
+		a[3] = arg1;
+		a[4] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "SPHL") == 0)
+	{
+		a[0] = 3;
+		a[1] = 7;
+		a[2] = 1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "PCHL") == 0)
+	{
+		a[0] = 3;
+		a[1] = 5;
+		a[2] = 1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "PUSH") == 0)
+	{
+		a[0] = 3;
+		a[1] = arg1;
+		a[2] = 5;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "POP") == 0)
+	{
+		a[0] = 3;
+		a[1] = arg1;
+		a[2] = 1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "JMP") == 0)
+	{
+		a[0] = 3;
+		a[1] = 0;
+		a[2] = 3;
+		a[3] = arg1;
+		a[4] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "CALL") == 0)
+	{
+		a[0] = 3;
+		a[1] = 1;
+		a[2] = 5;
+		a[3] = arg1;
+		a[4] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "RET") == 0)
+	{
+		a[0] = 3;
+		a[1] = 1;
+		a[2] = 1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "PCHL") == 0)
+	{
+		a[0] = 3;
+		a[1] = 5;
+		a[2] = 1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RST") == 0)
+	{
+		a[0] = 3;
+		a[1] = arg1;
+		a[2] = 7;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "JNZ") == 0)
+	{
+		a[0] = 3;
+		a[1] = 0;
+		a[2] = 2;
+		a[3] = arg1;
+		a[4] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "JZ") == 0)
+	{
+		a[0] = 3;
+		a[1] = 1;
+		a[2] = 2;
+		a[3] = arg1;
+		a[4] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "JNC") == 0)
+	{
+		a[0] = 3;
+		a[1] = 2;
+		a[2] = 2;
+		a[3] = arg1;
+		a[4] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "JC") == 0)
+	{
+		a[0] = 3;
+		a[1] = 3;
+		a[2] = 2;
+		a[3] = arg1;
+		a[4] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "JPO") == 0)
+	{
+		a[0] = 3;
+		a[1] = 4;
+		a[2] = 2;
+		a[3] = arg1;
+		a[4] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "JPE") == 0)
+	{
+		a[0] = 3;
+		a[1] = 5;
+		a[2] = 2;
+		a[4] = arg1;
+		a[5] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "JP") == 0)
+	{
+		a[0] = 3;
+		a[1] = 6;
+		a[2] = 2;
+		a[4] = arg1;
+		a[5] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "JM") == 0)
+	{
+		a[0] = 3;
+		a[1] = 7;
+		a[2] = 2;
+		a[4] = arg1;
+		a[5] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "CNZ") == 0)
+	{
+		a[0] = 3;
+		a[1] = 0;
+		a[2] = 4;
+		a[4] = arg1;
+		a[5] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "CZ") == 0)
+	{
+		a[0] = 3;
+		a[1] = 1;
+		a[2] = 4;
+		a[4] = arg1;
+		a[5] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "CNC") == 0)
+	{
+		a[0] = 3;
+		a[1] = 2;
+		a[2] = 4;
+		a[4] = arg1;
+		a[5] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "CC") == 0)
+	{
+		a[0] = 3;
+		a[1] = 3;
+		a[2] = 4;
+		a[4] = arg1;
+		a[5] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "CPO") == 0)
+	{
+		a[0] = 3;
+		a[1] = 4;
+		a[2] = 4;
+		a[4] = arg1;
+		a[5] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "CPE") == 0)
+	{
+		a[0] = 3;
+		a[1] = 5;
+		a[2] = 4;
+		a[4] = arg1;
+		a[5] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "CP") == 0)
+	{
+		a[0] = 3;
+		a[1] = 6;
+		a[2] = 4;
+		a[4] = arg1;
+		a[5] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "CM") == 0)
+	{
+		a[0] = 3;
+		a[1] = 7;
+		a[2] = 4;
+		a[4] = arg1;
+		a[5] = arg2;
+		l = 5;
+	}
+	else if (strcmp(opDesc.opName, "RNZ") == 0)
+	{
+		a[0] = 3;
+		a[1] = 0;
+		a[2] = 0;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RZ") == 0)
+	{
+		a[0] = 3;
+		a[1] = 1;
+		a[2] = 0;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RNC") == 0)
+	{
+		a[0] = 3;
+		a[1] = 2;
+		a[2] = 0;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RC") == 0)
+	{
+		a[0] = 3;
+		a[1] = 3;
+		a[2] = 0;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RPO") == 0)
+	{
+		a[0] = 3;
+		a[1] = 4;
+		a[2] = 0;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RPE") == 0)
+	{
+		a[0] = 3;
+		a[1] = 5;
+		a[2] = 0;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RP") == 0)
+	{
+		a[0] = 3;
+		a[1] = 6;
+		a[2] = 0;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RM") == 0)
+	{
+		a[0] = 3;
+		a[1] = 7;
+		a[2] = 0;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "EI") == 0)
+	{
+		a[0] = 3;
+		a[1] = 7;
+		a[2] = 3;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "DI") == 0)
+	{
+		a[0] = 3;
+		a[1] = 6;
+		a[2] = 3;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "NOP") == 0)
+	{
+		a[0] = 0;
+		a[1] = 0;
+		a[2] = 0;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "HLT") == 0)
+	{
+		a[0] = 1;
+		a[1] = 6;
+		a[2] = 6;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "ADD") == 0)
+	{
+		a[0] = 2;
+		a[1] = 0;
+		a[2] = arg1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "ADI") == 0)
+	{
+		a[0] = 3;
+		a[1] = 0;
+		a[2] = 6;
+		a[3] = arg1;
+		l = 4;
+	}
+	else if (strcmp(opDesc.opName, "ADC") == 0)
+	{
+		a[0] = 2;
+		a[1] = 1;
+		a[2] = arg1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "ACI") == 0)
+	{
+		a[0] = 3;
+		a[1] = 1;
+		a[2] = 6;
+		a[4] = arg1;
+		l = 4;
+	}
+	else if (strcmp(opDesc.opName, "SUB") == 0)
+	{
+		a[0] = 2;
+		a[1] = 2;
+		a[2] = arg1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "SUI") == 0)
+	{
+		a[0] = 3;
+		a[1] = 2;
+		a[2] = 6;
+		a[3] = arg1;
+		l = 4;
+	}
+	else if (strcmp(opDesc.opName, "SBB") == 0)
+	{
+		a[0] = 2;
+		a[1] = 3;
+		a[2] = arg1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "SBI") == 0)
+	{
+		a[0] = 3;
+		a[1] = 3;
+		a[2] = 6;
+		a[3] = arg1;
+		l = 4;
+	}
+	else if (strcmp(opDesc.opName, "CMP") == 0)
+	{
+		a[0] = 2;
+		a[1] = 7;
+		a[2] = arg1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "CPI") == 0)
+	{
+		a[0] = 3;
+		a[1] = 7;
+		a[2] = 6;
+		a[3] = arg1;
+		l = 4;
+	}
+	else if (strcmp(opDesc.opName, "INR") == 0)
+	{
+		a[0] = 0;
+		a[1] = arg1;
+		a[2] = 4;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "INX") == 0)
+	{
+		a[0] = 0;
+		a[1] = arg1;
+		a[2] = 3;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "DCR") == 0)
+	{
+		a[0] = 0;
+		a[1] = arg1;
+		a[2] = 5;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "DCX") == 0)
+	{
+		a[0] = 0;
+		a[1] = arg1 + 1;//reg name + 1
+		a[2] = 3;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "DAD") == 0)
+	{
+		a[0] = 0;
+		a[1] = arg1 + 1;//reg name + 1
+		a[2] = 1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "DAA") == 0)
+	{
+		a[0] = 0;
+		a[1] = 4;
+		a[2] = 7;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "ANA") == 0)
+	{
+		a[0] = 2;
+		a[1] = 4;
+		a[2] = arg1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "ANI") == 0)
+	{
+		a[0] = 3;
+		a[1] = 4;
+		a[2] = 6;
+		a[3] = arg1;
+		l = 4;
+	}
+	else if (strcmp(opDesc.opName, "XRA") == 0)
+	{
+		a[0] = 2;
+		a[1] = 5;
+		a[2] = arg1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "XRI") == 0)
+	{
+		a[0] = 3;
+		a[1] = 5;
+		a[2] = 6;
+		a[3] = arg1;
+		l = 4;
+	}
+	else if (strcmp(opDesc.opName, "ORA") == 0)
+	{
+		a[0] = 2;
+		a[1] = 6;
+		a[2] = arg1;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "ORI") == 0)
+	{
+		a[0] = 3;
+		a[1] = 6;
+		a[2] = 6;
+		a[3] = arg1;
+		l = 4;
+	}
+	else if (strcmp(opDesc.opName, "CMA") == 0)
+	{
+		a[0] = 0;
+		a[1] = 5;
+		a[2] = 7;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RLC") == 0)
+	{
+		a[0] = 0;
+		a[1] = 0;
+		a[2] = 7;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RRC") == 0)
+	{
+		a[0] = 0;
+		a[1] = 1;
+		a[2] = 7;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RAL") == 0)
+	{
+		a[0] = 0;
+		a[1] = 2;
+		a[2] = 7;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "RAR") == 0)
+	{
+		a[0] = 0;
+		a[1] = 3;
+		a[2] = 7;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "STC") == 0)
+	{
+		a[0] = 0;
+		a[1] = 6;
+		a[2] = 7;
+		l = 3;
+	}
+	else if (strcmp(opDesc.opName, "CMC") == 0)
+	{
+		a[0] = 0;
+		a[1] = 7;
+		a[2] = 7;
+		l = 3;
 	}
 	storeBytesToAnalyzeByffer(a, l, base, digits);
 }
@@ -306,15 +882,19 @@ void getCommand(enum OUTPUTMODE mode) {
 			switch (opDesc.expectedArgs)
 			{
 				case 1:
-					sprintf(temp, "%s %d\n", opDesc.opName, opDesc.arg1);
+					sprintf(temp, "%s %d\n", opDesc.opName, opDesc.arg[0]);
 					storeAnalizeBuf(temp);
 					break;
 				case 2:
-					sprintf(temp, "%s %d %d\n", opDesc.opName, opDesc.arg1, opDesc.arg2);
+					sprintf(temp, "%s %d %d\n", opDesc.opName, opDesc.arg[0], opDesc.arg[1]);
+					storeAnalizeBuf(temp);
+					break;
+				case 3:
+					sprintf(temp, "%s %d %d %d\n", opDesc.opName, opDesc.arg[0], opDesc.arg[1], opDesc.arg[2]);
 					storeAnalizeBuf(temp);
 					break;
 				default:
-					printf("line %d: <ERROR> too much args\n", lineCounter);
+					printf("line %d: <INTERNAL_ERROR> too much args\n", lineCounter);
 					break;
 			}
 			break;
@@ -328,13 +908,26 @@ void getCommand(enum OUTPUTMODE mode) {
 			/*TODO*/
 			break;
 		default:
-			printf("line %d: <ERROR> unrecognized mode\n", lineCounter);
+			printf("line %d: <INTERNAL_ERROR> unrecognized mode\n", lineCounter);
 			break;
+	}
+}
+
+void commandInfoInit(int expected, char * name) {
+	//printf ("initialized\n");
+	opDesc.expectedArgs = expected;
+	strcpy(opDesc.opName, name);
+	opDesc.args = 0;
+	for (int i = 0; i < MAX_ARGS; i++)
+	{
+		opDesc.arg[i] = 0;
 	}
 }
 
 //Инициализация буфера трансляции
 void analyzeBufInit() {
+	char * empty = "";
+	commandInfoInit(0, empty);
 	free(analyzeBuf.p);
 	analyzeBuf.stored = 0;
 	analyzeBuf.size = ANALYZE_BUF_INIT_SIZE;
@@ -375,32 +968,25 @@ void addOpDescArgument(int arg) {
 		addOpDescArgument(arg%8);
 	}
 	else
+	//<CMD ARG[0] ARG[1] ARG[2]>
 	{
 		opDesc.args++;
-		//printf("adding arg %d\n", arg);
-		switch (opDesc.args)
+		switch (expected)
 		{
 			case 1:
-				switch (expected)
-				{
-					case 1:
-						opDesc.arg1 = arg;
-						break;
-					case 2:
-						opDesc.arg2 = arg;
-						break;
-					default:
-						printf("line %d: <ERROR> too much args expected\n", lineCounter);
-						break;
-				}
+				opDesc.arg[0] = arg;
 				break;
 			case 2:
-				//Сдвигаем аргументы
-				opDesc.arg1 = opDesc.arg2;
-				opDesc.arg2 = arg;
+				opDesc.arg[0] = opDesc.arg[1];
+				opDesc.arg[1] = arg;
+				break;
+			case 3:
+				opDesc.arg[0] = opDesc.arg[1];
+				opDesc.arg[1] = opDesc.arg[2];
+				opDesc.arg[2] = arg;
 				break;
 			default:
-				printf("line %d: <ERROR> too much args in operation\n", lineCounter);
+				printf("line %d: <ERROR> too much args expected\n", lineCounter);
 				break;
 		}
 	}
@@ -419,7 +1005,7 @@ void numArgAnalyze(int arg) {
 }
 
 //Содержит ли массив длины l аргумент?
-int inArray(char * a[], char * arg, int l) {
+int inArray(const char * a[], char * arg, int l) {
 	for (int i = 0; i < l; i++)
 	{
 		if (strcmp(arg, a[i]) == 0)
@@ -461,7 +1047,7 @@ int isNArgCommand(char * arg, int n) {
 		case 2:
 			{
 				const char * a[] =
-					{"MOV", "MVI", "LXI", "LDA",
+					{"MOV", "MVI", "LDA",
 					 "STA", "LHLD", "SHLD",
 					 "JMP", "CALL", "JNZ", "JZ",
 					 "JNC", "JC", "JPO", "JPE",
@@ -471,8 +1057,15 @@ int isNArgCommand(char * arg, int n) {
 				int l = sizeof(a)/sizeof(a[0]);
 				return inArray(a, arg, l);
 			}
+		case 3:
+			{
+				const char * a[] =
+					{"LXI"};
+				int l = sizeof(a)/sizeof(a[0]);
+				return inArray(a, arg, l);
+			}
 		default:
-			printf("line %d: <ERROR> wrong argument amount\n", lineCounter);
+			printf("line %d: <INTERNAL_ERROR> wrong argument amount\n", lineCounter);
 			return 0;
 	}
 }
@@ -484,14 +1077,15 @@ int isCommandName(char * arg) {
 	//Количество аргументов (-1 - команда не найдена)
 	int result = -1;
 	//Цикл по возможному количеству арг-в
-	for (int i = 0; i <= 2; i++)
+	for (int i = 0; i <= MAX_ARGS; i++)
+	if (isNArgCommand(arg, i))
 	{
-		found+=isNArgCommand(arg, i);
-		if (found > 0) result = i;
+		found++;
+		result = i;
 	}
 	if (found > 1)
 	{
-		printf ("line %d: <ERROR> command duplicates in command list\n", lineCounter);
+		printf ("line %d: <INTERNAL_ERROR> command duplicates in command list\n", lineCounter);
 	}
 	return result;
 }
@@ -572,7 +1166,6 @@ void operationAnalyze(char * name) {
 	if (readingCommandLine == 1 && opDesc.args >= opDesc.expectedArgs) 
 	{
 		//Много. Записываем команду (внутри обнуляется флаг)
-		//printf("line %d: get cmd with %d args (%d, %d)\n", lineCounter-1, opDesc.args, opDesc.arg1, opDesc.arg2);
 		getCommand(globalMode);
 	}	
 	//Проверяем, читаем уже команду или пока нет
@@ -582,12 +1175,7 @@ void operationAnalyze(char * name) {
 		//Команда есть такая?
 		if (t != -1)
 		{
-			//printf ("initialized\n");
-			opDesc.expectedArgs = t;
-			strcpy(opDesc.opName, name);
-			opDesc.args = 0;
-			opDesc.arg1 = 0;
-			opDesc.arg2 = 0;
+			commandInfoInit(t, name);
 			readingCommandLine = 1;
 		}
 		//Нет такой команды. Ошибка
