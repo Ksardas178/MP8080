@@ -1119,8 +1119,8 @@ void operationAnalyze(char * name) {
 			//printf("found label to line %d\n", line);
 			//printf("%d %d\n", line);
 			//Преобразуем в два числа и сохраним в аргументы
-			numArgAnalyze(line/256);
 			numArgAnalyze(line%256);
+			numArgAnalyze(line/256);
 		}
 		//А такого случая быть не должно
 		else
