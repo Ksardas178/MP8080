@@ -33,9 +33,21 @@ typedef struct {
 	int	arg[MAX_ARGS];
 } operationDescription;
 
+typedef struct {
+	int line;
+	char name[MSG_LENGTH];
+} label;
+	
+typedef struct {
+	int size;
+	int stored;
+	label *p;
+} labelBuffer;
+	
 //Информация об анализируемой операции
 operationDescription opDesc;
 analyzeBuffer analyzeBuf;
+labelBuffer labelBuf;
 char stringBuffer[MSG_LENGTH];
 
 //Флаги и глобальные переменные
@@ -45,13 +57,14 @@ int lineCounter = 1;
 int warningCounter = 0;
 int errorCounter = 0;
 int columnCounter = 1;
-enum OUTPUTMODE globalMode = M_BINARY;
+enum OUTPUTMODE globalMode = M_CHECK;
 
 //Предописания
 void printAnalyzeBuf();
 void operationAnalyze(char * name);
 void numArgAnalyze(int arg);
 void getCommand();
+void addLabel(char * name);
 int toDecimalConvert(int base, const char* sum);
 	
 %}
@@ -87,13 +100,14 @@ int toDecimalConvert(int base, const char* sum);
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-_text	: text	{ getCommand(); printAnalyzeBuf(); }
+_text	: text	{ if (readingCommandLine == 1) getCommand(); printAnalyzeBuf(); }
 
 text: line text	{}
-	| line		{}
+	| line 		{}
 
-line: arguments	{}
-	| LABEL		{}
+line: '>' ID	{ addLabel($<str>2); } 
+	| arguments	{}
+	
 
 arguments	: arg arguments {}
 			| arg			{}
@@ -131,8 +145,57 @@ num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
 	| BINARY VALUE		{ $<val>$ = toDecimalConvert(2, $2); }
 
 
-%%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+//Сохранение метки в буфер
+void storeLabelBuf(char * name, int line) {
+	labelBuf.stored++;
+	if (labelBuf.stored > labelBuf.size)
+	{
+		labelBuf.size+=LABEL_BUF_ALLOCATE_SIZE;
+		labelBuf.p = (label*)realloc(labelBuf.p, labelBuf.size * sizeof(label));
+	}
+	strcpy(labelBuf.p[labelBuf.stored-1].name, name);
+	labelBuf.p[labelBuf.stored-1].line = line;
+}
 
+//Проверка существования метки
+int getLabel(char * name) {
+	for (int i = 0; i < labelBuf.stored; i++)
+	{
+		if (strcmp(labelBuf.p[i].name, name) == 0)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+//Добавление метки в буфер
+void addLabel(char * name) {
+	const int line = analyzeBuf.stored;
+	//Если нет метки с таким же именем
+	if (getLabel(name) == -1) 
+	{
+		storeLabelBuf(name, line);
+		//printf("stored %s on line %d\n", name, line);
+	}
+	else
+	{
+		errorCounter++;
+		fprintf(stderr, "line %d: <ERROR> label redefinition: %s", lineCounter, name);
+	}
+}
+
+//Инициализация буфера меток
+void labelBufInit() {
+	const int size = LABEL_BUF_INIT_SIZE;
+	free(labelBuf.p);
+	labelBuf.stored = 0;
+	labelBuf.size = size;
+	labelBuf.p = (label *)calloc(size, sizeof(label));
+}
+						   
 //Перевод 10-чного числа в заданную СС и запись в глобальный буфер n знаков
 void toBaseConvert(int num, int base, int digits) {
 	for (int i = digits-1; i >= 0; i-=1)
@@ -162,6 +225,7 @@ void storeNumToAnalyzeBuffer(int num, int base, int digits){
 	storeAnalyzeBuf(temp);
 }
 
+//Записывает байты из массива в буфер трансляции
 void storeBytesToAnalyzeBuffer(int a[], int l, int base, int digits) {
 	for (int i = 0; i < l; i++)
 	{
@@ -996,27 +1060,29 @@ int isRegisterName(char * arg) {
 
 //Инициализация переменной под новую операцию
 void operationAnalyze(char * name) {
-	int t = isCommandName(name);
+	int isCommand = isCommandName(name);
+	int isLabel = getLabel(name);
 	//Только вошли в программу?
 	if (inProgram == 0)
 	{
 		analyzeBufInit();
-		commandInfoInit(t, name);
+		labelBufInit();
+		commandInfoInit(isCommand, name);
 		inProgram = 1;
 	}
 	//Находимся в режиме поиска команды
 	if (readingCommandLine == 0)
 	{
 		//Если нашли команду без аргументов
-		if (t == 0) 
+		if (isCommand == 0) 
 		{
 			//Сразу же выводим ее
-			commandInfoInit(t, name);
+			commandInfoInit(isCommand, name);
 			getCommand();
 			//Флаг не меняем - ищем новую команду
 		}
 		//Нашли не команду
-		else if (t == -1)
+		else if (isCommand == -1)
 		{
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> unexpected command: %s\n", lineCounter, name);
@@ -1026,26 +1092,35 @@ void operationAnalyze(char * name) {
 		{
 			//Ставим флаг
 			readingCommandLine = 1;
-			commandInfoInit(t, name);
+			commandInfoInit(isCommand, name);
 		}
 	}
 	//Находимся в режиме чтения команды
 	else
 	{
 		//И вдруг читаем еще команду
-		if (t != -1)
+		if (isCommand != -1)
 		{
 			//Условно сбросили флаг
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> expected argument but recieved command\n", lineCounter);
 			//Снова подняли флаг и читаем
-			commandInfoInit(t, name);			
+			commandInfoInit(isCommand, name);			
 		}
 		//Читаем имя регистра
 		else if (isRegisterName(name) == 1)
 		{
 			//Преобразуем в число и сохраним в аргументы
 			numArgAnalyze(argConvert(name));
+		}
+		//Читаем имя метки
+		else if (isLabel != -1) {
+			int line = labelBuf.p[isLabel].line;
+			//printf("found label to line %d\n", line);
+			//printf("%d %d\n", line);
+			//Преобразуем в два числа и сохраним в аргументы
+			numArgAnalyze(line/256);
+			numArgAnalyze(line%256);
 		}
 		//А такого случая быть не должно
 		else

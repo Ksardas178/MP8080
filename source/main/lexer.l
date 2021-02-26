@@ -14,10 +14,10 @@ extern int lineCounter;
 
 %%
 <INITIAL>\/\/.*					{/*Simple comments*/}
+<INITIAL>\/\*(.|\n)*\*\/		{/*More comments*/	}
 
-<INITIAL>[A-Z]+					{ yylval.str = yytext; return ID;}
+<INITIAL>[A-Z_]+[A-Z0-9_]*		{ yylval.str = yytext; return ID; }
 
-<INITIAL>[a-zA-Z_]+[a-zA-Z0-9_]*:	{ yylval.str = yytext; return LABEL;}
 <sReadNum>[0-9a-fA-F]+			{
 									yylval.str = yytext;
 									//printf ("read num: %s\n", yytext);
@@ -62,7 +62,7 @@ extern int lineCounter;
 <INITIAL>\)						{ return CLOSE; }
 <INITIAL><<						{ return SHL; 	}
 <INITIAL>>>						{ return SHR; 	}
-<INITIAL>[\n\r]+				{ lineCounter++;}
+<INITIAL>[\n\r]					{ lineCounter++;}
 <INITIAL>[ \t]+					{}
 <INITIAL>(.)	    			return yytext[0];
 %%

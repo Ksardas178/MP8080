@@ -1,0 +1,54 @@
+/*Рассмотрите сложение двоично-десятичных
+чисел. Рассмотрите действие команды DAA 
+для различных значений суммируемых операндов.
+Результат выполнения фиксируйте в памяти.*/
+
+//===========================================(36,27)
+//loading 1st num
+	//loading first digit
+	MVI A 3
+	//loading second digit
+	RLC RLC RLC RLC
+	MVI A 6
+//Moving data
+MOV B A
+//loading 2nd num
+	//loading first digit
+	MVI A 2
+	//loading second digit
+	RLC RLC RLC RLC
+	MVI A 7
+//now we have 36 and 27 in B and A
+ADD B	//A <- A + B
+DAA		//correction
+STA o000 o200 //store A
+//===========================================(15,25)		
+//loading 1st num
+	//loading first digit
+	MVI A 1
+	//loading second digit
+	RLC RLC RLC RLC
+	MVI A 5
+//Moving data
+MOV B A
+//loading 2nd num
+	//loading first digit
+	MVI A 2
+	//loading second digit
+	RLC RLC RLC RLC
+	MVI A 5
+//now we have 36 and 27 in B and A
+ADD B	//A <- A + B
+DAA		//correction
+STA o000 o201 //store A
+HLT
+		
+
+
+
+
+
+
+
+
+
