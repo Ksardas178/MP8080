@@ -178,7 +178,7 @@ void addLabel(char * name) {
 	if (getLabel(name) == -1) 
 	{
 		storeLabelBuf(name, line);
-		//printf("stored %s on line %d\n", name, line);
+		printf("stored label %s on line %d\n", name, line);
 	}
 	else
 	{

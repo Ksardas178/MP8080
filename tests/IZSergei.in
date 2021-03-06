@@ -1,0 +1,24 @@
+LXI B o200 o000 //Задаем начальный адрес
+MVI D 10 //Инициализируем счетчик
+MVI E 0 //Переменная под максимальное число
+
+>LABEL
+	/*TODO*/
+	LDAX B 	//A <- arr[i]
+	
+	SUB E	//A <- A - E
+	JM 14 0//if (A < 0) goto ENDIF
+		//else store new max element
+		LDAX B	//A <- arr[i]
+		MOV E A	//E <- A*
+	>ENDIF
+
+	INX B	//i++	
+	DCR D 	//D--
+JNZ LABEL 	//if (D != 0) goto LABEL
+
+/*Store max value to addr*/	
+MVI A E
+STA o100 o000
+
+HLT

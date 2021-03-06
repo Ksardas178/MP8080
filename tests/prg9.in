@@ -1,0 +1,5 @@
+LXI SP o067 o000
+RST 1
+HLT
+/*Wrong address here*/
+RET
