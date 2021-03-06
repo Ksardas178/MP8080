@@ -1,0 +1,12 @@
+/*Comment 1*/
+MOV A B
+/*Comment 2*/
+MOV B C
+//
+		/**/
+/***
+MOV 2 3/
+*/////
+MOV 3 4
+//***********/
+HLT

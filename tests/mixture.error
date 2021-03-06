@@ -6,6 +6,7 @@ line 6: <ERROR> unexpected command: Z
 line 8: <ERROR> unexpected command: TEST
 line 8: <ERROR> unexpected command: T
 line 14: <ERROR> unexpected command: HHH
+line 17: <ERROR> first argument must be B or D register specified
 line 25: <ERROR> wrong symbolic name recieved: GHT
 line 26: <ERROR> unexpected command: FTR
 line 29: <ERROR> unexpected command: M

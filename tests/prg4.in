@@ -1,0 +1,7 @@
+	MVI A b11111111
+	LXI H 9 0	//addr -> HL	00000000|00001001
+>L1
+	MOV M A		//A -> M		addr <- A
+	INX H		//HL++ (DCX?)
+	JMP L1
+//cells 9-32?

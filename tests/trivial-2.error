@@ -1,0 +1,3 @@
+line 4: <ERROR> first argument must be B, D, C or SP register specified
+line 6: <ERROR> first argument must be B or D register specified
+line 8: <ERROR> first argument must be B or D register specified

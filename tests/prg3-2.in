@@ -9,7 +9,9 @@
 	MVI A 3
 	//loading second digit
 	RLC RLC RLC RLC
-	MVI A 6
+	MVI C 6
+	ADD C //A <- A+C
+	//0011|0110
 //Moving data
 MOV B A
 //loading 2nd num
@@ -17,30 +19,15 @@ MOV B A
 	MVI A 2
 	//loading second digit
 	RLC RLC RLC RLC
-	MVI A 7
+	MVI C 7
+	ADD C //A <- A+C
 //now we have 36 and 27 in B and A
+//0011|0110
+//0010|0111
 ADD B	//A <- A + B
-DAA		//correction
-STA o000 o200 //store A
+DAA		//correction (A)
+STA o200 o000 //store A
 //===========================================(15,25)		
-//loading 1st num
-	//loading first digit
-	MVI A 1
-	//loading second digit
-	RLC RLC RLC RLC
-	MVI A 5
-//Moving data
-MOV B A
-//loading 2nd num
-	//loading first digit
-	MVI A 2
-	//loading second digit
-	RLC RLC RLC RLC
-	MVI A 5
-//now we have 36 and 27 in B and A
-ADD B	//A <- A + B
-DAA		//correction
-STA o000 o201 //store A
 HLT
 		
 

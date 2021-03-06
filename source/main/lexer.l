@@ -10,11 +10,16 @@ extern int lineCounter;
 
 %}
 
-%start sReadNum
+%start sReadNum sComment
 
 %%
 <INITIAL>\/\/.*					{/*Simple comments*/}
-<INITIAL>\/\*(.|\n)*\*\/		{/*More comments*/	}
+<INITIAL>"/*"					{ BEGIN sComment;	}
+
+<sComment>[^*\n]*				{ /* eat anything that's not a '*' */ 	}
+<sComment>"*"+[^*/\n]			{ /* eat up '*'s not followed by '/'s */}
+<sComment>\n					{ lineCounter++;	}
+<sComment>"*"+"/"				{ BEGIN INITIAL;	}
 
 <INITIAL>[A-Z_]+[A-Z0-9_]*		{ yylval.str = yytext; return ID; }
 

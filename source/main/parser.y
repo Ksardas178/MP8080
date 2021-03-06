@@ -57,7 +57,7 @@ int lineCounter = 1;
 int warningCounter = 0;
 int errorCounter = 0;
 int columnCounter = 1;
-enum OUTPUTMODE globalMode = M_CHECK;
+enum OUTPUTMODE globalMode = M_BINARY;
 
 //Предописания
 void printAnalyzeBuf();
@@ -136,7 +136,7 @@ ariphmetic2	: ariphmetic2  INC	{ $<val>$ = $<val>1 + 1;	}
 			| ariphmetic2  DEC	{ $<val>$ = $<val>1 - 1;	}
 			| ariphmetic1		{ $<val>$ = $<val>1;		}
 
-ariphmetic1	: OPEN  ariphmetic5  CLOSE	{ $<val>$ = $<val>2;	}
+ariphmetic1	: OPEN  ariphmetic6  CLOSE	{ $<val>$ = $<val>2;	}
 			| num						{ $<val>$ = $<val>1;	}
 
 num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
@@ -1122,9 +1122,10 @@ void operationAnalyze(char * name) {
 			numArgAnalyze(line%256);
 			numArgAnalyze(line/256);
 		}
-		//А такого случая быть не должно
+		//Скорее всего, нашли ссылку на метку (TODO)
 		else
 		{
+			storeLabelBuf(name, -1);
 			readingCommandLine = 0;
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> wrong symbolic name recieved: %s\n", lineCounter, name);
