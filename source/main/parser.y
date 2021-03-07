@@ -218,18 +218,35 @@ void storeAnalyzeBuf(char * msg) {
 }
 
 //Сохранение числа в заданной СС в буфер трансляции
-void storeNumToAnalyzeBuffer(int num, int base, int digits){
-	char temp[MSG_LENGTH];
+void storeNumToAnalyzeBuffer(int num, int base, int digits, char opName[]){
+	char temp[MSG_LENGTH+4];
 	toBaseConvert(num, base, digits);
-	sprintf(temp, "%s\n", stringBuffer);
+
+	if (opName == NULL) {
+		sprintf(temp, "%s\n", stringBuffer);
+	} else {
+		sprintf(temp, "%s - %s\n", stringBuffer, opName);
+	}
+
 	storeAnalyzeBuf(temp);
 }
 
+int showOpNames = 0;
+
 //Записывает байты из массива в буфер трансляции
-void storeBytesToAnalyzeBuffer(int a[], int l, int base, int digits) {
-	for (int i = 0; i < l; i++)
-	{
-		storeNumToAnalyzeBuffer(a[i], base, digits);
+void storeBytesToAnalyzeBuffer(int a[], int l, int base, int digits, char opName[]) {
+	if (showOpNames) {
+		storeNumToAnalyzeBuffer(a[0], base, digits, opName);
+
+		for (int i = 1; i < l; i++) {
+			char temp[3];
+			sprintf(temp, "B%d", i + 1);
+			storeNumToAnalyzeBuffer(a[i], base, digits, temp);
+		}
+	} else {
+		for (int i = 0; i < l; i++) {
+			storeNumToAnalyzeBuffer(a[i], base, digits, NULL);
+		}
 	}
 }
 
@@ -756,7 +773,7 @@ void internalBinaryStore() {
 		a[0] = generateCommandNameCode(0, 7, 7);
 		l = 1;
 	}
-	storeBytesToAnalyzeBuffer(a, l, base, digits);
+	storeBytesToAnalyzeBuffer(a, l, base, digits, opDesc.opName);
 }
 
 //Запись операции в буфер трансляции

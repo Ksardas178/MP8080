@@ -14,11 +14,14 @@ void yyerror(const char * s) {
 }
 
 extern int outputBase;
+extern int showOpNames;
 
 int main(int argc, char * argv[]) {
 	for (int it = 0; it < argc; it++) {
 		if (strcmp(argv[it], "--octal") == 0) {
 			outputBase = 8;
+		} else if (strcmp(argv[it], "--opnames") == 0) {
+			showOpNames = 1;
 		}
 	}
 
