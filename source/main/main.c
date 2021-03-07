@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 // To trace parser, set yydebug = 1
 // ... and call yacc with options -vtd
@@ -12,7 +13,15 @@ void yyerror(const char * s) {
 	fprintf(stderr, "Error > %s\n", s);
 }
 
-int main() {
+extern int outputBase;
+
+int main(int argc, char * argv[]) {
+	for (int it = 0; it < argc; it++) {
+		if (strcmp(argv[it], "--octal") == 0) {
+			outputBase = 8;
+		}
+	}
+
 	yydebug = 0;
 	return yyparse();
 }

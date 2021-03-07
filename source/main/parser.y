@@ -37,13 +37,13 @@ typedef struct {
 	int line;
 	char name[MSG_LENGTH];
 } label;
-	
+
 typedef struct {
 	int size;
 	int stored;
 	label *p;
 } labelBuffer;
-	
+
 //Информация об анализируемой операции
 operationDescription opDesc;
 analyzeBuffer analyzeBuf;
@@ -66,7 +66,7 @@ void numArgAnalyze(int arg);
 void getCommand();
 void addLabel(char * name);
 int toDecimalConvert(int base, const char* sum);
-	
+
 %}
 //=====================================================
 
@@ -105,9 +105,9 @@ _text	: text	{ if (readingCommandLine == 1) getCommand(); printAnalyzeBuf(); }
 text: line text	{}
 	| line 		{}
 
-line: '>' ID	{ addLabel($<str>2); } 
+line: '>' ID	{ addLabel($<str>2); }
 	| arguments	{}
-	
+
 
 arguments	: arg arguments {}
 			| arg			{}
@@ -122,7 +122,7 @@ ariphmetic6	: ariphmetic6 SHR ariphmetic5	{ $<val>$ = $<val>1/pow(2, $<val>3);	}
 ariphmetic5	: ariphmetic5 MINUS ariphmetic4	{ $<val>$ = $<val>1 - $<val>3; 	}
 			| ariphmetic5 PLUS  ariphmetic4	{ $<val>$ = $<val>1 + $<val>3; 	}
 			| ariphmetic4					{ $<val>$ = $<val>1; 			}
-			
+
 ariphmetic4	: ariphmetic4 MULT ariphmetic3	{ $<val>$ = $<val>1 * $<val>3; 	}
 			| ariphmetic4 DIV  ariphmetic3	{ $<val>$ = $<val>1 / $<val>3; 	}
 			| ariphmetic4 MOD  ariphmetic3	{ $<val>$ = $<val>1 % $<val>3; 	}
@@ -146,7 +146,7 @@ num	: DECIMAL VALUE		{ $<val>$ = toDecimalConvert(10, $2); }
 
 
 %%//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
 //Сохранение метки в буфер
 void storeLabelBuf(char * name, int line) {
 	labelBuf.stored++;
@@ -175,7 +175,7 @@ int getLabel(char * name) {
 void addLabel(char * name) {
 	const int line = analyzeBuf.stored;
 	//Если нет метки с таким же именем
-	if (getLabel(name) == -1) 
+	if (getLabel(name) == -1)
 	{
 		storeLabelBuf(name, line);
 		printf("stored label %s on line %d\n", name, line);
@@ -195,7 +195,7 @@ void labelBufInit() {
 	labelBuf.size = size;
 	labelBuf.p = (label *)calloc(size, sizeof(label));
 }
-						   
+
 //Перевод 10-чного числа в заданную СС и запись в глобальный буфер n знаков
 void toBaseConvert(int num, int base, int digits) {
 	for (int i = digits-1; i >= 0; i-=1)
@@ -238,10 +238,19 @@ int generateCommandNameCode(int a, int b, int c) {
 	return (a * 8 + b) * 8 + c;
 }
 
+int outputBase = 2;
+
+int getDigitsForBase(int base) {
+	if (base == 8) {
+		return 3;
+	}
+	return 8;
+}
+
 //Внутренняя функция трансляции в двоичное представление
 void internalBinaryStore() {
-	const int base = 2;
-	const int digits = 8;
+	const int base = outputBase;
+	const int digits = getDigitsForBase(base);
 	const int arg1 = opDesc.arg[0];
 	const int arg2 = opDesc.arg[1];
 	const int arg3 = opDesc.arg[2];
@@ -265,7 +274,7 @@ void internalBinaryStore() {
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, C or SP register specified\n", lineCounter);
 		}
-		
+
 		a[0] = generateCommandNameCode(0, arg1, 1);
 		a[1] = arg2;
 		a[2] = arg3;
@@ -285,12 +294,12 @@ void internalBinaryStore() {
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> first argument must be B or D register specified\n", lineCounter);
 		}
-		
+
 		a[0] = generateCommandNameCode(0, arg1+1, 2);
 		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "STA") == 0)
-	{	
+	{
 		a[0] = generateCommandNameCode(0, 6, 2);
 		a[1] = arg1;
 		a[2] = arg2;
@@ -303,7 +312,7 @@ void internalBinaryStore() {
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> first argument must be B or D register specified\n", lineCounter);
 		}
-		
+
 		a[0] = generateCommandNameCode(0, arg1, 2);
 		l = 1;
 	}
@@ -360,7 +369,7 @@ void internalBinaryStore() {
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, H or PSW register specified\n", lineCounter);
 		}
-		
+
 		a[0] = generateCommandNameCode(3, arg1, 5);
 		l = 1;
 	}
@@ -371,7 +380,7 @@ void internalBinaryStore() {
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, H or PSW register specified\n", lineCounter);
 		}
-		
+
 		a[0] = generateCommandNameCode(3, arg1, 1);
 		l = 1;
 	}
@@ -643,7 +652,7 @@ void internalBinaryStore() {
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, C or SP register specified\n", lineCounter);
 		}
-		
+
 		a[0] = generateCommandNameCode(0, arg1, 3);
 		l = 1;
 	}
@@ -659,7 +668,7 @@ void internalBinaryStore() {
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, C or SP register specified\n", lineCounter);
 		}
-		
+
 		a[0] = generateCommandNameCode(0, arg1+1, 3);
 		l = 1;
 	}
@@ -670,7 +679,7 @@ void internalBinaryStore() {
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> first argument must be B, D, C or SP register specified\n", lineCounter);
 		}
-		
+
 		a[0] = generateCommandNameCode(0, arg1+1, 1);
 		l = 1;
 	}
@@ -686,7 +695,7 @@ void internalBinaryStore() {
 	}
 	else if (strcmp(opDesc.opName, "ANI") == 0)
 	{
-		a[0] = generateCommandNameCode(3, 4, 6);	
+		a[0] = generateCommandNameCode(3, 4, 6);
 		a[1] = arg1;
 		l = 2;
 	}
@@ -696,7 +705,7 @@ void internalBinaryStore() {
 		l = 1;
 	}
 	else if (strcmp(opDesc.opName, "XRI") == 0)
-	{		
+	{
 		a[0] = generateCommandNameCode(3, 5, 6);
 		a[1] = arg1;
 		l = 2;
@@ -827,14 +836,14 @@ void analyzeBufInit() {
 //Вывод буфера трансляции
 void printAnalyzeBuf() {
 	printf("\n");
-	if (errorCounter > 0) 
+	if (errorCounter > 0)
 	{
 		printf("\x1b[31;1mErrors: %d\n\x1b[0m", errorCounter);
 	}
-	if (warningCounter > 0) 
+	if (warningCounter > 0)
 	{
 		printf("\x1b[33;1mWarnings: %d\n\x1b[0m", warningCounter);
-	} 
+	}
 	if (errorCounter == 0 && warningCounter == 0)
 	{
 		printf("\x1b[32;1mInput is correct\n\x1b[0m");
@@ -842,7 +851,9 @@ void printAnalyzeBuf() {
 	printf("\n\x1b[30;1mCode analysis results:\n\x1b[0m______________________________\n");
 	for (int i = 0; i < analyzeBuf.stored; i++)
 	{
-		toBaseConvert(i, 2, 8);
+		int outputWidth = getDigitsForBase(outputBase);
+
+		toBaseConvert(i, outputBase, outputWidth);
 		printf("%s: %s", stringBuffer, analyzeBuf.p[i].content);
 	}
 	printf("\n");
@@ -902,7 +913,7 @@ void numArgAnalyze(int arg) {
 	}
 	//Читаем команду, ждем аргумент, он неотрицательный. Отлично
 	else
-	{	
+	{
 		addOpDescArgument(arg);
 	}
 }
@@ -1074,7 +1085,7 @@ void operationAnalyze(char * name) {
 	if (readingCommandLine == 0)
 	{
 		//Если нашли команду без аргументов
-		if (isCommand == 0) 
+		if (isCommand == 0)
 		{
 			//Сразу же выводим ее
 			commandInfoInit(isCommand, name);
@@ -1105,7 +1116,7 @@ void operationAnalyze(char * name) {
 			errorCounter++;
 			fprintf(stderr, "line %d: <ERROR> expected argument but recieved command\n", lineCounter);
 			//Снова подняли флаг и читаем
-			commandInfoInit(isCommand, name);			
+			commandInfoInit(isCommand, name);
 		}
 		//Читаем имя регистра
 		else if (isRegisterName(name) == 1)
