@@ -29,8 +29,8 @@
     sudo apt-get install flex
     sudo apt-get install bison
 
-which flex /\*Sanity check to make sure flex is installed\*/
-which bison /\*Sanity check to make sure bison is installed\*/
+    which flex /\*Sanity check to make sure flex is installed\*/
+    which bison /\*Sanity check to make sure bison is installed\*/
 
 ### Как это запустить?
 
