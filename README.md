@@ -25,14 +25,11 @@
 курсе транслирующих систем и не должны вызывать затруднений. Для
 установки можно воспользоваться следующими консольными командами:
 
-sudo apt-get update
-
-sudo apt-get install flex
-
-sudo apt-get install bison
+    sudo apt-get update
+    sudo apt-get install flex
+    sudo apt-get install bison
 
 which flex /\*Sanity check to make sure flex is installed\*/
-
 which bison /\*Sanity check to make sure bison is installed\*/
 
 ### Как это запустить?
@@ -40,11 +37,11 @@ which bison /\*Sanity check to make sure bison is installed\*/
 Итак, у Вас установлены все программы, а проект скачан с репозитория.
 Далее в терминале переходим в папку проекта (MP Project) и вводим:
 
-./build
+    ./build
 
 Запуск собранного транслятора осуществляется командой:
 
-./generated/run
+    ./generated/run
 
 В качестве аргументов можно (и рекомендуется) указывать текстовые файлы
 с программой.
@@ -60,8 +57,7 @@ which bison /\*Sanity check to make sure bison is installed\*/
 ассемблеро-подобных команд, следующих друг за другом на новой строке
 либо отделенных пробелами. Например:
 
-![](media/image1.png){width="4.627635608048994in"
-height="2.116279527559055in"}
+![image](https://user-images.githubusercontent.com/43096732/118685722-fc2eab00-b80b-11eb-973a-69c2e30c03ed.png)
 
 Также здесь нужно отметить, что транслятор поддерживает комментарии в
 стиле Си:
@@ -92,15 +88,14 @@ height="2.116279527559055in"}
 
 Пример входного файла к этим пунктам:
 
-![](media/image2.png){width="1.6513888888888888in" height="1.41875in"}
+![image](https://user-images.githubusercontent.com/43096732/118685749-02bd2280-b80c-11eb-8212-f2da15b7dfda.png)
 
 Внимание: при вводе аргумента, большего 11 111 111~2~ = 255~10~,
 возможны (и скорее всего возникнут) ошибки трансляции.
 
 Арифметические операции удобны при формировании 2-10 числа, как то:
 
-![](media/image3.png){width="2.135715223097113in"
-height="0.7709405074365704in"}
+![image](https://user-images.githubusercontent.com/43096732/118685775-09e43080-b80c-11eb-958d-6487e3410dc5.png)
 
 ### А что-то еще из полезного?
 
@@ -112,8 +107,7 @@ height="0.7709405074365704in"}
 Итого: можно описать метку, ПОСЛЕ чего в коде ссылаться на нее. То есть
 переходы по меткам возможны только «вверх». Пример:
 
-![](media/image4.png){width="1.2909722222222222in"
-height="0.8486111111111111in"}
+![image](https://user-images.githubusercontent.com/43096732/118685801-123c6b80-b80c-11eb-98f5-0eacd30c578f.png)
 
 Фактически метка «запоминает» адрес следующей за ней команды, и при
 использовании происходит подстановка этого значения вместо имени метки.
